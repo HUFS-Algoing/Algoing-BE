@@ -85,6 +85,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 
+    // JSoup
+    implementation 'org.jsoup:jsoup:.15.3'
+
 }
 
 tasks.named('test') {
