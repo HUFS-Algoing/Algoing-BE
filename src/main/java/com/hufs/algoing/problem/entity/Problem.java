@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-
 @Table(name = "problem")
 public class Problem {
     @Id
@@ -21,6 +20,18 @@ public class Problem {
     @Lob
     private String description;
 
+    private String input;
+
+    private String output;
+
+    private String sampleInput1;
+
+    private String sampleIntput2;
+
+    private String sampleOutput1;
+
+    private String sampleOutput2;
+
     private String tag;
 
     private Long time;
@@ -29,15 +40,11 @@ public class Problem {
 
     private Long level;
 
-    @Column(name = "input")
-    private String input;
-
-    @Column(name = "output")
-    private String output;
+    private String limit;
 
     @Builder
     public Problem(Long problemId, String title, String tag, Long time, Long memory, Long level,
-                   String input, String output, String description) {
+                   String input, String output, String description, String sampleInput1, String sampleIntput2, String sampleOutput1, String sampleOutput2, String limit) {
         this.problemId = problemId;
         this.title = title;
         this.tag = tag;
@@ -46,6 +53,26 @@ public class Problem {
         this.level = level;
         this.input = input;
         this.output = output;
+        this.sampleInput1 = sampleInput1;
+        this.sampleIntput2 = sampleIntput2;
+        this.sampleOutput1 = sampleOutput1;
+        this.sampleOutput2 = sampleOutput2;
         this.description = description;
+        this.limit = limit;
     }
+
+
+//    @Builder
+//    public Problem(Long problemId, String title, String tag, Long time, Long memory, Long level,
+//                   String input, String output, String description) {
+//        this.problemId = problemId;
+//        this.title = title;
+//        this.tag = tag;
+//        this.time = time;
+//        this.memory = memory;
+//        this.level = level;
+//        this.input = input;
+//        this.output = output;
+//        this.description = description;
+//    }
 }

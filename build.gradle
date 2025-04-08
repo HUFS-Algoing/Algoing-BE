@@ -80,13 +80,15 @@ dependencies {
     //H2
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-devtools'
 
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 
     // JSoup
-    implementation 'org.jsoup:jsoup:.15.3'
+    implementation 'org.jsoup:jsoup:1.15.3'
+
 
 }
 

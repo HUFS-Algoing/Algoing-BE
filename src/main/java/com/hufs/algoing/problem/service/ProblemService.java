@@ -11,18 +11,17 @@ public class ProblemService {
     @Autowired
     private ProblemRepository problemRepository;
 
+    @Autowired
+    private ProblemCrawlService problemCrawlService;
+
     public Problem getOrCrawlProblem(Long problemId){
 
         if(problemRepository.existsByProblemId(problemId)){
             return (Problem) problemRepository.findByProblemId(problemId).orElse(null);
         }
-        Problem newProblem = crawlProblem(problemId);
+        Problem newProblem = problemCrawlService.crawlProblem(problemId);
 
         return problemRepository.save(newProblem);
-    }
-
-    private Problem crawlProblem(Long problemId) {
-        
     }
 
 }
