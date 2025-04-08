@@ -22,8 +22,8 @@ public class UserSolvedProblem {
     private User userId;
 
     @ManyToOne(cascade = CascadeType.MERGE, targetEntity = Problem.class)
-    @JoinColumn(name = "problem_num")
-    private Problem problemNum;
+    @JoinColumn(name = "problem_id")
+    private Problem problemId;
 
     @Column
     @Lob
@@ -33,10 +33,10 @@ public class UserSolvedProblem {
     private LocalDateTime solvedAt;
 
     @Builder
-    public UserSolvedProblem(Long userSolvedId, User userId, Problem problemNum, String answer, LocalDateTime solvedAt) {
+    public UserSolvedProblem(Long userSolvedId, User userId, Problem problemId, String answer, LocalDateTime solvedAt) {
         this.userSolvedId = userSolvedId;
         this.userId = userId;
-        this.problemNum = problemNum;
+        this.problemId = problemId;
         this.answer = answer;
         this.solvedAt = solvedAt;
     }
