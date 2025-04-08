@@ -8,17 +8,29 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-
 @Table(name = "problem")
 public class Problem {
     @Id
     @Column(name = "problem_id", nullable = false, unique = true)
-    private Long id;
-
-    @Column(name = "problem_num" , nullable = false, unique = true)
-    private Long problemNum;
+    private Long problemId;
 
     private String title;
+
+    @Column(name = "description")
+    @Lob
+    private String description;
+
+    private String input;
+
+    private String output;
+
+    private String sampleInput1;
+
+    private String sampleIntput2;
+
+    private String sampleOutput1;
+
+    private String sampleOutput2;
 
     private String tag;
 
@@ -28,21 +40,12 @@ public class Problem {
 
     private Long level;
 
-    @Column(name = "input")
-    private String input;
-
-    @Column(name = "output")
-    private String output;
-
-    @Column(name = "content")
-    @Lob
-    private String content;
+    private String limit;
 
     @Builder
-    public Problem(Long id, Long problemNum, String title, String tag, Long time, Long memory, Long level,
-                   String input, String output, String content) {
-        this.id = id;
-        this.problemNum = problemNum;
+    public Problem(Long problemId, String title, String tag, Long time, Long memory, Long level,
+                   String input, String output, String description, String sampleInput1, String sampleIntput2, String sampleOutput1, String sampleOutput2, String limit) {
+        this.problemId = problemId;
         this.title = title;
         this.tag = tag;
         this.time = time;
@@ -50,6 +53,26 @@ public class Problem {
         this.level = level;
         this.input = input;
         this.output = output;
-        this.content = content;
+        this.sampleInput1 = sampleInput1;
+        this.sampleIntput2 = sampleIntput2;
+        this.sampleOutput1 = sampleOutput1;
+        this.sampleOutput2 = sampleOutput2;
+        this.description = description;
+        this.limit = limit;
     }
+
+
+//    @Builder
+//    public Problem(Long problemId, String title, String tag, Long time, Long memory, Long level,
+//                   String input, String output, String description) {
+//        this.problemId = problemId;
+//        this.title = title;
+//        this.tag = tag;
+//        this.time = time;
+//        this.memory = memory;
+//        this.level = level;
+//        this.input = input;
+//        this.output = output;
+//        this.description = description;
+//    }
 }
