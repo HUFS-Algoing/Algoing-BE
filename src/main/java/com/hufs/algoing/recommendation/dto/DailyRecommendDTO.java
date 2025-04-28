@@ -19,7 +19,6 @@ public class DailyRecommendDTO {
     public DailyRecommendDTO(Long problemId, double score) {
         this.problemId = problemId;
         this.score = score;
-        // title, level, tag는 따로 설정하거나 기본값으로 놔둬
         this.title = null;
         this.level = 0;
         this.tag = null;
