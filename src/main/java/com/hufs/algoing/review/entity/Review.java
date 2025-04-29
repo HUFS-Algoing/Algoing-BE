@@ -42,20 +42,20 @@ public class Review {
     private Long duplicate;
 
     @Lob
-    @Column(name="read_review")
+    @Column(name="read_review", length=256)
     private String readReview;
 
     @Lob
-    @Column(name="opt_review")
+    @Column(name="opt_review", length=256)
     private String optReview;
 
     @Lob
-    @Column(name="dup_review")
+    @Column(name="dup_review", length=256)
     private String dupReview;
 
     // 최종 리뷰
     @Lob
-    @Column(name="summary")
+    @Column(name="summary", length=256)
     private String summary;
 
     @Column(name = "problem_num")

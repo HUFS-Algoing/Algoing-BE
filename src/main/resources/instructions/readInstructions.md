@@ -65,7 +65,7 @@ Sample structure for JSON Data 1 is as follows:
 
 ```json
 {
-"readbility" : 60
+"readbility" : 60,
 "review": "There are many abbreviated forms such as 'arr' and 'n', so it may take some time to figure out what they mean. It is recommended to use more specific names such as 'numbers' and 'length'."
 }
 ```

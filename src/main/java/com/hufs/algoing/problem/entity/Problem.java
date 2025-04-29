@@ -16,7 +16,7 @@ public class Problem {
 
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 256)
     @Lob
     private String description;
 
@@ -47,12 +47,12 @@ public class Problem {
 
     private Long level;
 
-   //@Lob
-   //private String limit;
+   @Lob
+   private String limit;
 
     @Builder
     public Problem(Long problemId, String title, String tag, String time, String memory, Long level,
-                   String input, String output, String description, String sampleInput1, String sampleInput2, String sampleOutput1, String sampleOutput2) {
+                   String input, String output, String description, String sampleInput1, String sampleInput2, String sampleOutput1, String sampleOutput2, String limit) {
         this.problemId = problemId;
         this.title = title;
         this.tag = tag;
@@ -66,6 +66,6 @@ public class Problem {
         this.sampleOutput1 = sampleOutput1;
         this.sampleOutput2 = sampleOutput2;
         this.description = description;
-        //this.limit = limit;
+        this.limit = limit;
     }
 }
