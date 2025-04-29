@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import reactor.core.scheduler.Schedulers;
 
 
 import java.time.LocalDateTime;
@@ -43,9 +44,17 @@ public class ReviewService {
 
     public Mono<Review> handleReview(ReviewRequestDTO dto) {
 
-        Mono<JsonNode> readReviewMono = handleReadReview(dto);
-        Mono<JsonNode> optReviewMono = handleOptReview(dto);
-        Mono<JsonNode> dupReviewMono = handleDupReview(dto);
+        Mono<JsonNode> readReviewMono = handleReadReview(dto)
+                .doOnSubscribe(sub->log.info("readReview"))
+                .subscribeOn(Schedulers.boundedElastic());
+
+        Mono<JsonNode> optReviewMono = handleOptReview(dto)
+                .doOnSubscribe(sub->log.info("optReview"))
+                .subscribeOn(Schedulers.boundedElastic());
+
+        Mono<JsonNode> dupReviewMono = handleDupReview(dto)
+                .doOnSubscribe(sub->log.info("dupReview"))
+                .subscribeOn(Schedulers.boundedElastic());
 
         return Mono.zip(readReviewMono, optReviewMono, dupReviewMono)
                 .flatMap(tuple3 -> {
