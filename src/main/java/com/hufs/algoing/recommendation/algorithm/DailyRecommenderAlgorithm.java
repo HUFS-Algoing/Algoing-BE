@@ -133,7 +133,7 @@ public class DailyRecommenderAlgorithm {
         double tierDiff = Math.abs(user.getTier() - problem.getLevel());
 
         // 유저와 문제의 티어 차이를 고려한 점수 부여
-        double tierScore = (tierDiff <= MAX_TIER_DIFF) ? (2.0 - (tierDiff * 0.1)) : 0.0;
+        double tierScore = (tierDiff <= MAX_TIER_DIFF) ? (1.0 - (tierDiff * 0.5)) : 0.0;
 
         // 문제 유형 유사도 기반 점수
         double typeScore = typeSimilarity * W_ProblemType;
