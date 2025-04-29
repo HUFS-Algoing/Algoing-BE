@@ -26,7 +26,7 @@ public class ProblemCrawlService{
                     .problemId(problemId)
                     .title(doc.select("#problem_title").text())
                     .description(doc.select("#problem_description").html())
-                    //.limit(doc.select("#problem_limit").html())
+                    .limit(doc.select("#problem_limit").html())
                     .input(doc.select("#problem_input p").text())
                     .output(doc.select("#problem_output p").text())
                     .sampleInput1(doc.select("#sample-input-1").html())
