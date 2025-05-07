@@ -18,5 +18,8 @@ public class UserDTO {
 //    @NotEmpty(message = "비밀번호 확인을 입력하세요.")
 //    private String passwordConfirm;
 
+    private String nickname;
+
+
 
 }
