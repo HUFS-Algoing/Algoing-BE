@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -41,6 +43,9 @@ public class Problem {
     @Lob
     private String tag;
 
+    @Lob
+    private String tagNames;
+
     private String time;
 
     private String memory;
@@ -51,11 +56,12 @@ public class Problem {
    private String limit;
 
     @Builder
-    public Problem(Long problemId, String title, String tag, String time, String memory, Long level,
+    public Problem(Long problemId, String title, String tag, String tagNames, String time, String memory, Long level,
                    String input, String output, String description, String sampleInput1, String sampleInput2, String sampleOutput1, String sampleOutput2, String limit) {
         this.problemId = problemId;
         this.title = title;
         this.tag = tag;
+        this.tagNames = tagNames;
         this.time = time;
         this.memory = memory;
         this.level = level;
