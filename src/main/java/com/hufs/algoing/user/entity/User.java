@@ -25,8 +25,13 @@ public class User implements UserDetails {
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
 
-    @Column(name = "handle", unique = true, nullable = true)
+    // Solved.ac에서 사용하는 handle입니다.
+    @Column(name = "handle", unique = true)
     private String handle;
+
+    // 알고잉에서 사용하는 닉네임입니다.
+    @Column(unique = true, nullable = false)
+    private String nickname;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -60,13 +65,15 @@ public class User implements UserDetails {
 
 
     @Builder
-    public User(String handle, String password, String email) {
+    public User(String handle, String password, String email, String nickname) {
         this.handle = handle;
         this.password = password;
         this.email = email;
+        this.nickname = nickname;
         this.createdAt = LocalDateTime.now();
     }
 
+    //UserDetails 등에서 Username은 이메일입니다!!!!!
     @Override
     public String getUsername() {
         return email;
