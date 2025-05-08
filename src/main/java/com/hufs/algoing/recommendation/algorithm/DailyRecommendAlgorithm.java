@@ -110,6 +110,7 @@ public class DailyRecommendAlgorithm {
         }
 
         // 코사인 유사도 계산
+        //공통 태그 수 기반
         int dotProduct = 0;
         double userNorm = 0;
         double problemNorm = 0;

@@ -1,37 +1,145 @@
 package com.hufs.algoing.recommendation.algorithm;
 
-import com.hufs.algoing.aisolved.entity.AISolved;
+import com.hufs.algoing.problem.entity.Problem;
+import com.hufs.algoing.problem.entity.UserSolvedProblem;
+import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
 import com.hufs.algoing.review.entity.Review;
 import com.hufs.algoing.user.entity.User;
-import com.hufs.algoing.problem.entity.Problem;
-import com.hufs.algoing.recommendation.dto.WeaknessRecommedDTO;
+import com.hufs.algoing.aisolved.entity.AISolved;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WeaknessRecommendAlgorithm {
 
-    //가중치 관리
-    private static final double W_readScore = 0.25;
-    private static final double W_optimizeScore = 0.25;
-    private static final double W_duplicateScore = 0.25;
-    private static final double W_UserTier = 0.15;
-    private static final double W_UserSolvedType = 0.1;
+    //추천에 관여하는 팩터
+    //1.가독성(함수명, 변수명, 코드 구조) 점수
+    //2.최적화 (시간 복잡도와 공간 복잡도) 점수
+    //3.코드 중복성(함수화 또는 리팩토링을 통해 중복을 줄일 수 있는 방법) 점수
+    //7.문제유형
 
-    private static final int MAX_TIER_DIFF = 2; //티어 차이 최대 2까지
-    private static final int MAX_SCORE_DIFF = 20; //점수 차이 최대 20점까지
-    //problem
-    //유저가 리뷰 받은 문제- AI 리뷰 문제(리뷰 테이블) 추천 리스트 만듦
-    public static List<WeaknessRecommedDTO> recommend(User user, List<AISolved> aisolveds, List<Review> userReviewProblem) {
+    private static final int MAX_WEAKNESS=15; //점수 차이 15점 이내 문제 추천
 
-    return(null);
+    public static List<WeaknessRecommendDTO> recommend(User user, List<Review> userReviewProblem, List<AISolved> aisolvedProblem, List<UserSolvedProblem> userSolvedProblems, List<Problem> problems) {
+
+        //유저 id와 일치하는 review 가져오기
+        List<Review> userReview = userReviewProblem.stream()
+                .filter(review -> review.getUser().getUserId().equals(user.getUserId()))
+                .collect(Collectors.toList());
+
+        //약점 분석-각 점수 평균
+        //유저 가독성 평균 계산
+        double averageUserRead=userReview.stream()
+                .mapToLong(Review::getReadbility)
+                .average()
+                .orElse(0);
+
+        //유저 최적화 평균 계산
+        double averageUserOptimize=userReview.stream()
+                .mapToLong(Review::getOptimization)
+                .average()
+                .orElse(0);
+
+        //유저 중복성 평균 계산
+        double averageUserduplicate=userReview.stream()
+                .mapToLong(Review::getDuplicate)
+                .average()
+                .orElse(0);
+
+        //가장 낮은(=취약점) 점수 선택
+        //key-value 매핑
+        Map<String, Double> userScoreMap = new HashMap<String, Double>();
+        userScoreMap.put("averageUserRead", averageUserRead);
+        userScoreMap.put("averageUserOptimize", averageUserOptimize);
+        userScoreMap.put("averageUserduplicate", averageUserduplicate);
+
+        String userWeakness=userScoreMap.entrySet().stream()
+                .min(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("averageUserRead"); //기본값= 중복성 점수
+
+        //유저 약점과 유사한 문제 리스트 필터링
+        List<AISolved> aiSolvedList=aisolvedProblem.stream()
+                .filter(p-> {
+                    switch (userWeakness){
+                        case "readbility": //userWeakness=readbility
+                            return p.getReadLevel() > averageUserRead &&
+                                    p.getReadLevel() <=averageUserRead+MAX_WEAKNESS; //문제 점수가 유저 점수보다 높아야하고, 문제가 문제점수+15보다 작아야 함
+                        case "optimization":     //&&유저 약점 이외의 항목(!userWeakness) 보다 문제 점수가 높게 설정할 수도 있음
+                            return p.getOptLevel()>averageUserOptimize &&
+                                    p.getOptLevel()<=averageUserOptimize+MAX_WEAKNESS;
+                        case "duplicate":
+                            return p.getDupLevel()>averageUserduplicate &&
+                                    p.getDupLevel()<=averageUserduplicate+MAX_WEAKNESS;
+                        default:
+                            return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        //유형 선호도 가중치 계산
+        //유저가 푼 유형 갯수(ex: greedy,20)
+        Map<String,Long> typeCount= userSolvedProblems.stream()
+                .filter(usp->usp.getUserId().equals(user.getUserId()))
+                .map(solvedProblem -> solvedProblem.getProblemId().getTag())
+                .filter(tagStr -> tagStr != null && !tagStr.isEmpty())
+                .flatMap(tagStr -> Arrays.stream(tagStr.split(",")))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        //유형 선호도 정규화
+        Map<String,Double> typePreferWeight=typeCount.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue()/(double)problems.size())); //value 전체 문제 수로 정규화
+
+        //최종 점수 계산(점수 기반 가중치 + 유형 선호도 가중치)
+        List<WeaknessRecommendDTO> recommendProblems = (List<WeaknessRecommendDTO>) aiSolvedList.stream()
+                .map(r -> {
+
+                    //문제별 점수 벡터
+                    double problemRed=r.getReadLevel();
+                    double problemOpt=r.getOptLevel();
+                    double problemDup=r.getDupLevel();
+
+                    //유클리드 거리 계산
+                    //작을수록 유사
+                    double distance=Math.sqrt(
+                            Math.pow(problemRed-averageUserRead,2)
+                            + Math.pow(problemOpt-averageUserOptimize,2)
+                            + Math.pow(problemDup-averageUserduplicate,2)
+                    );
+
+                    //유사도 점수 계산
+                    //유사할수록 높은 점수 받도록 변환
+                    double distanceScore= 1/(distance+1);
+
+                    //문제 유형 가중치 합산
+                    String allTag=r.getProblem().getTag();
+                    double typeWeightSum = 0.0;
+                    if(allTag!=null && !allTag.isEmpty()){
+                        String[] tags=allTag.split(",");
+                        for(String tag : tags){
+                            typeWeightSum+=typePreferWeight.getOrDefault(tag.trim(), 0.0);
+                        }
+                    }
+
+                //유형-점수 합산
+                double finalScore = typeWeightSum * 0.4 + distanceScore * 0.6; //유형은 결과에 40% 영향 점수는 60% 영향
+
+                //결과 DTO
+                return new WeaknessRecommendDTO(r.getProblem(),finalScore);
+                })
+                .collect(Collectors.toList());
+
+        //이미 푼 문제 제거
+        List<WeaknessRecommendDTO> filteredRecommendProblems = recommendProblems.stream()
+                .filter(dto -> userSolvedProblems.stream()
+                        .noneMatch(sp -> sp.getProblemId().equals(dto.getProblemId()))
+                )
+                .collect(Collectors.toList());
+
+        return filteredRecommendProblems;
 
     }
-
-
-
-    //리뷰 테이블: 모든 문제 가독성 점수 , 최적화, 중복성 점수 평균값?
-    //반환받은 리뷰review테이블 난이도와 비슷한 레벨의 aisolved 테이블 난이도 문제 선택
-
-
 }
