@@ -105,4 +105,11 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority("user"));
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                '}';
+    }
+
 }

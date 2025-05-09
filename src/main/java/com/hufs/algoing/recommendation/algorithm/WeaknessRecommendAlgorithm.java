@@ -54,22 +54,26 @@ public class WeaknessRecommendAlgorithm {
         userScoreMap.put("averageUserOptimize", averageUserOptimize);
         userScoreMap.put("averageUserduplicate", averageUserduplicate);
 
+        //❗❗❗소수점 둘째자리까지로 계산하도록 수정필요❗❗❗❗
         String userWeakness=userScoreMap.entrySet().stream()
                 .min(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("averageUserRead"); //기본값= 중복성 점수
 
+        //System.out.println("userWeaknes: " + userWeakness);//제대로 출력됨
+        //System.out.println("averageUserRead"+averageUserRead);
+
         //유저 약점과 유사한 문제 리스트 필터링
         List<AISolved> aiSolvedList=aisolvedProblem.stream()
                 .filter(p-> {
                     switch (userWeakness){
-                        case "readbility": //userWeakness=readbility
+                        case "averageUserRead": //userWeakness=readbility
                             return p.getReadLevel() > averageUserRead &&
-                                    p.getReadLevel() <=averageUserRead+MAX_WEAKNESS; //문제 점수가 유저 점수보다 높아야하고, 문제가 문제점수+15보다 작아야 함
-                        case "optimization":     //&&유저 약점 이외의 항목(!userWeakness) 보다 문제 점수가 높게 설정할 수도 있음
+                                    p.getReadLevel() <=averageUserRead+MAX_WEAKNESS;//문제 점수가 유저 점수보다 높아야하고, 문제가 문제점수+15보다 작아야 함
+                        case "averageUserOptimize":     //&&유저 약점 이외의 항목(!userWeakness) 보다 문제 점수가 높게 설정할 수도 있음
                             return p.getOptLevel()>averageUserOptimize &&
                                     p.getOptLevel()<=averageUserOptimize+MAX_WEAKNESS;
-                        case "duplicate":
+                        case "averageUserduplicate":
                             return p.getDupLevel()>averageUserduplicate &&
                                     p.getDupLevel()<=averageUserduplicate+MAX_WEAKNESS;
                         default:
@@ -78,14 +82,21 @@ public class WeaknessRecommendAlgorithm {
                 })
                 .collect(Collectors.toList());
 
+        //System.out.println("aisolvedProblem" + aisolvedProblem); //제대로 출력됨
+        //System.out.println("aisolvedlist"+aiSolvedList); //제대로 출력됨
+
         //유형 선호도 가중치 계산
         //유저가 푼 유형 갯수(ex: greedy,20)
         Map<String,Long> typeCount= userSolvedProblems.stream()
-                .filter(usp->usp.getUserId().equals(user.getUserId()))
+                .filter(usp->usp.getUserId().getUserId().equals(user.getUserId()))
                 .map(solvedProblem -> solvedProblem.getProblemId().getTag())
                 .filter(tagStr -> tagStr != null && !tagStr.isEmpty())
                 .flatMap(tagStr -> Arrays.stream(tagStr.split(",")))
+                .flatMap(tagStr -> Arrays.stream(tagStr.split("\\s*,\\s*"))) // split 후 양쪽 공백 제거
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+
+        //System.out.println("typecount"+typeCount); //제대로 출력됨 드디어ㅠㅠㅠㅠ
 
         //유형 선호도 정규화
         Map<String,Double> typePreferWeight=typeCount.entrySet().stream()
@@ -132,14 +143,20 @@ public class WeaknessRecommendAlgorithm {
                 })
                 .collect(Collectors.toList());
 
-        //이미 푼 문제 제거
+        // 유저가 푼 문제들의 ID만 추출
+        Set<Long> solvedProblemIds = userSolvedProblems.stream()
+                .filter(sp -> sp.getUserId().getUserId().equals(user.getUserId()))
+                .map(sp -> sp.getProblemId().getProblemId())
+                .collect(Collectors.toSet());
+
+        // 추천 리스트에서 이미 푼 문제 제거
         List<WeaknessRecommendDTO> filteredRecommendProblems = recommendProblems.stream()
-                .filter(dto -> userSolvedProblems.stream()
-                        .noneMatch(sp -> sp.getProblemId().equals(dto.getProblemId()))
-                )
+                .filter(dto -> !solvedProblemIds.contains(dto.getProblemId().getProblemId()))
                 .collect(Collectors.toList());
 
-        return filteredRecommendProblems;
+        //❗❗❗소수점 셋째자리까지만 나오게❗❗❗❗
+        int recommendCount = Math.min(3,filteredRecommendProblems.size());
+        return filteredRecommendProblems.subList(0, recommendCount); // 상위 3개만 잘라서 반환
 
     }
 }
