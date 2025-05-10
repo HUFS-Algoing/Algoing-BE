@@ -10,8 +10,5 @@ import java.util.List;
 @Repository
 public interface UserSolvedProblemRepository extends JpaRepository<UserSolvedProblem, Long> {
 
-    // user_id로 푼 문제 리스트 조회
-    List<UserSolvedProblem> findByUserIdUserId(Long userId);
-
     List<UserSolvedProblem> findByUserId(User user);
 }

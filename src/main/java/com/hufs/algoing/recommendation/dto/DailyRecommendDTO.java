@@ -15,15 +15,6 @@ public class DailyRecommendDTO {
     private String tag;
     private double score;
 
-    // problemId, score만 받는 생성자
-    public DailyRecommendDTO(Long problemId, double score) {
-        this.problemId = problemId;
-        this.score = score;
-        this.title = null;
-        this.level = 0;
-        this.tag = null;
-    }
-
     @Override
     public String toString() {
         return "DailyRecommendDTO{" +

@@ -5,9 +5,10 @@ import com.hufs.algoing.problem.repository.ProblemRepository;
 import com.hufs.algoing.problem.entity.UserSolvedProblem;
 import com.hufs.algoing.problem.repository.UserSolvedProblemRepository;
 import com.hufs.algoing.recommendation.dto.DailyRecommendDTO;
-import com.hufs.algoing.recommendation.algorithm.DailyRecommenderAlgorithm;
+import com.hufs.algoing.recommendation.algorithm.DailyRecommendAlgorithm;
 import com.hufs.algoing.user.entity.User;
 import com.hufs.algoing.user.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class DailyRecommendService {
 
         // 유저 정보 가져오기
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저정보를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("유저 정보를 찾을 수 없습니다: " + userId));
 
         // 유저가 푼 문제 가져오기
         List<UserSolvedProblem> solvedProblems = userSolvedProblemRepository.findByUserId(user);
@@ -34,7 +35,7 @@ public class DailyRecommendService {
         List<Problem> allProblems = problemRepository.findAll();
 
         // 추천 알고리즘 호출
-        List<DailyRecommendDTO> recommendations = DailyRecommenderAlgorithm.recommend(user, allProblems, solvedProblems);
+        List<DailyRecommendDTO> recommendations = DailyRecommendAlgorithm.recommend(user, allProblems, solvedProblems);
         
         for (DailyRecommendDTO dto : recommendations) {
         }

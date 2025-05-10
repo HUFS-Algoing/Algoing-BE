@@ -8,7 +8,7 @@ import com.hufs.algoing.user.entity.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DailyRecommenderAlgorithm {
+public class DailyRecommendAlgorithm {
 
     // 가중치 관리
     private static final double W_UserTier = 0.3;
@@ -24,7 +24,7 @@ public class DailyRecommenderAlgorithm {
         // 유저가 푼 문제 번호 -> USER_SOLVED_PROBLEM 테이블 Problem_num값 가져오기
         List<Long> solvedProblemIds = solvedProblems.stream()
                 .filter(solvedProblem -> {
-                    boolean isMatchingUser = solvedProblem.getUserId().getUserId().equals(user.getUserId());
+                    boolean isMatchingUser = solvedProblem.getUserId().getUserId().equals(user.getUserId()); //solvedProblem이 user객체 참조 -> 다시 userId조회
                     return isMatchingUser;
                 }) // 해당 유저가 푼 문제만 필터링
                 .map(solvedProblem -> {
@@ -50,11 +50,11 @@ public class DailyRecommenderAlgorithm {
                     // dailyRecommend 객체 생성(문제 번호와 점수)
                     return new DailyRecommendDTO(
                             problem.getProblemId(),
-                            problem.getTitle(),        // 문제 제목
-                            Math.toIntExact(problem.getLevel()),        // 문제 난이도
-                            problem.getTag(),          // 문제 태그
-                            score                      // 추천 점수
-                    );                 // 추천 점수
+                            problem.getTitle(),
+                            Math.toIntExact(problem.getLevel()),
+                            problem.getTag(),
+                            score
+                    );
                 })
                 .collect(Collectors.toList());
 
@@ -68,13 +68,13 @@ public class DailyRecommenderAlgorithm {
 
     // 유저가 푼 문제 유형 리스트로 반환
     private static List<String> calculateUserProblemTags(User user, List<UserSolvedProblem> solvedProblems, List<Problem> problems) {
-        List<String> userTags = solvedProblems.stream()
-                .filter(solvedProblem -> solvedProblem.getUserId().equals(user)) // 유저가 푼 문제만 필터링
-                .map(solvedProblem -> solvedProblem.getProblemId()) // 푼 문제 가져오기
-                .map(problem -> problem.getTag()) // 태그 추출
-                .distinct() // 중복 제거
+        return solvedProblems.stream()
+                .filter(solvedProblem -> solvedProblem.getUserId().equals(user))
+                .map(solvedProblem -> solvedProblem.getProblemId().getTag())
+                .filter(tagStr -> tagStr != null && !tagStr.isEmpty())
+                .flatMap(tagStr -> List.of(tagStr.split(",")).stream())
+                .distinct()
                 .collect(Collectors.toList());
-        return userTags;
     }
 
     // 유저가 푼 태그와 문제의 태그의 코사인 유사도 계산
@@ -110,6 +110,7 @@ public class DailyRecommenderAlgorithm {
         }
 
         // 코사인 유사도 계산
+        //공통 태그 수 기반
         int dotProduct = 0;
         double userNorm = 0;
         double problemNorm = 0;
@@ -147,6 +148,8 @@ public class DailyRecommenderAlgorithm {
                 typeScore +
                 solvedTypeScore +
                 tierScore);
-        return totalScore;
+
+        return  Math.round(totalScore * 100.0) / 100.0; //소수점 둘째 자리 까지만
+
     }
 }
