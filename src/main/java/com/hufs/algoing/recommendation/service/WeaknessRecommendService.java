@@ -1,0 +1,58 @@
+package com.hufs.algoing.recommendation.service;
+
+import com.hufs.algoing.aisolved.entity.AISolved;
+import com.hufs.algoing.aisolved.repository.AISolvedRepository;
+import com.hufs.algoing.problem.entity.Problem;
+import com.hufs.algoing.problem.entity.UserSolvedProblem;
+import com.hufs.algoing.problem.repository.ProblemRepository;
+import com.hufs.algoing.problem.repository.UserSolvedProblemRepository;
+import com.hufs.algoing.recommendation.algorithm.WeaknessRecommendAlgorithm;
+import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
+import com.hufs.algoing.review.entity.Review;
+import com.hufs.algoing.review.repository.ReviewRepository;
+import com.hufs.algoing.user.entity.User;
+import com.hufs.algoing.user.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class WeaknessRecommendService {
+
+    private final UserRepository userRepository;
+    private final ProblemRepository problemRepository;
+    private final UserSolvedProblemRepository userSolvedProblemRepository;
+    private final ReviewRepository reviewRepository;
+    private final AISolvedRepository aisolvedRepository;
+
+
+    public List<WeaknessRecommendDTO> getWeaknessRecommendations(Long userId) {
+
+        //유저가 받은 리뷰 가져오기
+        User user=userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("유저가 받은 리뷰가 없습니다"+userId));
+        System.out.println(user);
+        //전체 문제 가져오기
+        List<Problem> allProblems = problemRepository.findAll();
+
+        //푼 문제 목록 가져오기
+        List<UserSolvedProblem> allSolvedProblems = userSolvedProblemRepository.findAll();
+
+        //유저가 받은 리뷰 가져오기
+        List<Review> allReviews = reviewRepository.findAll();
+
+        //AI가 푼 문제 가져오기
+        List<AISolved> allAiSolved =aisolvedRepository.findAll();
+
+        // 추천 알고리즘 호출
+        List<WeaknessRecommendDTO> recommendations = WeaknessRecommendAlgorithm.recommend(user, allReviews, allAiSolved, allSolvedProblems, allProblems);
+        for (WeaknessRecommendDTO dto : recommendations) {
+        }
+        return recommendations;
+
+
+    }
+}
