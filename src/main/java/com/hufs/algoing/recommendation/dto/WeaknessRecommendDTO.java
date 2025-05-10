@@ -16,7 +16,7 @@ public class WeaknessRecommendDTO {
     @Override
     public String toString() {
         return "WeaknessRecommendDTO{" +
-                "problem=" + problemId.getTitle() +
+                "problem=" + problemId.getProblemId() +
                 ", finalScore=" + finalScore +
                 '}';}
 }

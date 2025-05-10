@@ -7,6 +7,8 @@ import com.hufs.algoing.review.entity.Review;
 import com.hufs.algoing.user.entity.User;
 import com.hufs.algoing.aisolved.entity.AISolved;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -49,19 +51,15 @@ public class WeaknessRecommendAlgorithm {
 
         //가장 낮은(=취약점) 점수 선택
         //key-value 매핑
-        Map<String, Double> userScoreMap = new HashMap<String, Double>();
-        userScoreMap.put("averageUserRead", averageUserRead);
-        userScoreMap.put("averageUserOptimize", averageUserOptimize);
-        userScoreMap.put("averageUserduplicate", averageUserduplicate);
+        Map<String, Double> userScoreMap = new HashMap<>();
+        userScoreMap.put("averageUserRead", new BigDecimal(averageUserRead).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        userScoreMap.put("averageUserOptimize", new BigDecimal(averageUserOptimize).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        userScoreMap.put("averageUserduplicate", new BigDecimal(averageUserduplicate).setScale(2, RoundingMode.HALF_UP).doubleValue());
 
-        //❗❗❗소수점 둘째자리까지로 계산하도록 수정필요❗❗❗❗
         String userWeakness=userScoreMap.entrySet().stream()
                 .min(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("averageUserRead"); //기본값= 중복성 점수
-
-        //System.out.println("userWeaknes: " + userWeakness);//제대로 출력됨
-        //System.out.println("averageUserRead"+averageUserRead);
 
         //유저 약점과 유사한 문제 리스트 필터링
         List<AISolved> aiSolvedList=aisolvedProblem.stream()
@@ -82,9 +80,6 @@ public class WeaknessRecommendAlgorithm {
                 })
                 .collect(Collectors.toList());
 
-        //System.out.println("aisolvedProblem" + aisolvedProblem); //제대로 출력됨
-        //System.out.println("aisolvedlist"+aiSolvedList); //제대로 출력됨
-
         //유형 선호도 가중치 계산
         //유저가 푼 유형 갯수(ex: greedy,20)
         Map<String,Long> typeCount= userSolvedProblems.stream()
@@ -94,9 +89,6 @@ public class WeaknessRecommendAlgorithm {
                 .flatMap(tagStr -> Arrays.stream(tagStr.split(",")))
                 .flatMap(tagStr -> Arrays.stream(tagStr.split("\\s*,\\s*"))) // split 후 양쪽 공백 제거
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-
-        //System.out.println("typecount"+typeCount); //제대로 출력됨 드디어ㅠㅠㅠㅠ
 
         //유형 선호도 정규화
         Map<String,Double> typePreferWeight=typeCount.entrySet().stream()
@@ -154,7 +146,10 @@ public class WeaknessRecommendAlgorithm {
                 .filter(dto -> !solvedProblemIds.contains(dto.getProblemId().getProblemId()))
                 .collect(Collectors.toList());
 
-        //❗❗❗소수점 셋째자리까지만 나오게❗❗❗❗
+        filteredRecommendProblems.forEach(problem -> {
+            problem.setFinalScore(new BigDecimal(problem.getFinalScore()).setScale(3, RoundingMode.HALF_UP).doubleValue());
+        });
+
         int recommendCount = Math.min(3,filteredRecommendProblems.size());
         return filteredRecommendProblems.subList(0, recommendCount); // 상위 3개만 잘라서 반환
 
