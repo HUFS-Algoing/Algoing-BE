@@ -9,6 +9,9 @@ import com.hufs.algoing.review.dto.ReviewRequestDTO;
 import com.hufs.algoing.review.dto.ReviewResponseDTO;
 import com.hufs.algoing.review.entity.Review;
 import com.hufs.algoing.review.repository.ReviewRepository;
+import com.hufs.algoing.snapshot.Service.SnapShotService;
+import com.hufs.algoing.snapshot.entity.Snapshot;
+import com.hufs.algoing.snapshot.repository.SnapShotRepository;
 import com.hufs.algoing.user.entity.User;
 import com.hufs.algoing.user.repository.UserRepository;
 
@@ -23,8 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.scheduler.Schedulers;
 
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,16 +35,17 @@ public class ReviewService {
     private final GPTService gptService;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final SnapShotService snapShotService;
 
-
-    // Todo - 유저의 가장 최근 리뷰 가져오도록 수정
-    public ReviewResponseDTO getReview(Long userId, Long problemNum) {
-        Review review = reviewRepository.getReview(userId, problemNum);
+    // 해당 문제의 가장 최신 리뷰
+    public ReviewResponseDTO getRecentReview(Long userId, Long problemNum) {
+        Review review = reviewRepository.getRecentReview(userId, problemNum);
         return new ReviewResponseDTO(review.getSummary());
     }
 
-    public Mono<Review> handleReview(ReviewRequestDTO dto) {
+    public Mono<ReviewResponseDTO> handleReview(ReviewRequestDTO dto) {
 
+        log.info(dto.toString());
         Mono<JsonNode> readReviewMono = handleReadReview(dto)
                 .doOnSubscribe(sub->log.info("readReview"))
                 .subscribeOn(Schedulers.boundedElastic());
@@ -63,11 +65,12 @@ public class ReviewService {
                     JsonNode dupReview = tuple3.getT3();
 
                     return handlesummary(readReview, optReview, dupReview)
+
                             .flatMap(summary -> {
 
                                 String finalSummary = summary.get("review").asText();
 
-                                User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+                                User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. userId=" + dto.getUserId()));
 
                                 Review review = Review.builder()
                                         .code(dto.getCode())
@@ -81,13 +84,16 @@ public class ReviewService {
                                         .duplicate(dupReview.get("duplicate").asLong())
                                         .dupReview(dupReview.get("dupReview").asText())
                                         .summary(finalSummary)
-                                        .createdAt(LocalDateTime.now())
                                         .build();
 
+                                snapShotService.checkAndSaveSnapShot(user, review);
                                 reviewRepository.save(review);
 
+                                ReviewResponseDTO finalSummaryDTO = ReviewResponseDTO.builder()
+                                        .summary(finalSummary)
+                                        .build();
 
-                                return Mono.just(review);
+                                return Mono.just(finalSummaryDTO);
                             });
                 });
     }

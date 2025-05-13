@@ -70,7 +70,7 @@ public class Review {
     private User user;
 
     @Lob
-    @Column(name="code")
+    @Column(name="code", length=256)
     private String code;
 
     @Column(name="language")

@@ -1,19 +1,21 @@
 package com.hufs.algoing.global.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
 @Configuration
 public class WebClientConfig {
 
-    //  @Value("${openai.url}")
+    @Value("${openai.url}")
     private String aiUrl;
 
-    //   @Value("${openai.secret}")
+    @Value("${openai.secret}")
     private String aiKey;
 
     @Bean
@@ -25,5 +27,9 @@ public class WebClientConfig {
                 .build();
     }
 
+    @Bean
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
 
 }

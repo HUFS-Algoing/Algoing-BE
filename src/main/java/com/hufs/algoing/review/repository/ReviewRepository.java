@@ -7,7 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCustomRepository {
-    Review findByUserUserIdAndProblemNum(Long userId, Long problemNum);
-
-
 }

@@ -51,6 +51,7 @@ public class GPTService {
     public void analyzeAllProblems() {
         List<Problem> problems = problemRepository.findAll();
         Flux.fromIterable(problems)
+                .filter(problem -> aiSolvedRepository.findByProblem_ProblemId(problem.getProblemId()) == null)
                 .parallel()
                 .runOn(Schedulers.boundedElastic())
                 .flatMap(this::analyzeAndSave)
