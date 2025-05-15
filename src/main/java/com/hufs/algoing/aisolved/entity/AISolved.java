@@ -47,19 +47,5 @@ public class AISolved {
     @JoinColumn(name="problem_id")
     private Problem problem;
 
-    @Override
-    public String toString() {
-        return "AISolved{" +
-                "id=" + id +
-                ", readLevel=" + readLevel +
-                ", optLevel=" + optLevel +
-                ", dupLevel=" + dupLevel +
-                ", readTip='" + readTip + '\'' +
-                ", optTip='" + optTip + '\'' +
-                ", dupTip='" + dupTip + '\'' +
-                ", pattern='" + pattern + '\'' +
-                ", problem=" + (problem != null ? problem.getProblemId() : null) +  // 문제 ID만 출력 (문제 객체가 null일 수 있기 때문)
-                '}';
-    }
 
 }
