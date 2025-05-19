@@ -1,6 +1,6 @@
 package com.hufs.algoing.user.controller;
 
-import com.hufs.algoing.problem.dto.SubmittedProblemDTO;
+import com.hufs.algoing.problem.dto.ZandiDTO;
 import com.hufs.algoing.user.dto.UserInfoDTO;
 import com.hufs.algoing.user.entity.User;
 import com.hufs.algoing.user.service.UserService;
@@ -39,10 +39,10 @@ public class UserInfoController {
     }
 
     @GetMapping("/zandi")
-    public ResponseEntity<List<SubmittedProblemDTO>> getUserZandi(
+    public ResponseEntity<List<ZandiDTO>> getUserZandi(
             @AuthenticationPrincipal User p){
-        List<SubmittedProblemDTO> submittedProblemDTOList = userService.getUserActivity(p);
-        return ResponseEntity.ok(submittedProblemDTOList);
+        List<ZandiDTO> zandiDTOList = userService.getUserActivity(p);
+        return ResponseEntity.ok(zandiDTOList);
     }
 
 }

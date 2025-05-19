@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class SubmittedProblemDTO {
+public class ZandiDTO {
     private LocalDate date;
     private Long count;
 }

@@ -1,6 +1,7 @@
 package com.hufs.algoing.user.service;
 
-import com.hufs.algoing.problem.dto.SubmittedProblemDTO;
+import com.hufs.algoing.problem.dto.ZandiDTO;
+import com.hufs.algoing.problem.entity.ProblemStatus;
 import com.hufs.algoing.problem.repository.SubmittedProblemRepository;
 import com.hufs.algoing.solvedac.dto.SolvedAcProfileDTO;
 import com.hufs.algoing.solvedac.service.SolvedAcService;
@@ -71,7 +72,7 @@ public class UserService {
         return user.getUserId();
     }
 
-    public List<SubmittedProblemDTO> getUserActivity(User user){
-        return submittedProblemRepository.findGroupedByDate(user);
+    public List<ZandiDTO> getUserActivity(User user){
+        return submittedProblemRepository.findGroupedByDate(user, ProblemStatus.SOLVED);
     }
 }
