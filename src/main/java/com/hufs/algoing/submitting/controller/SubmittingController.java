@@ -1,5 +1,6 @@
 package com.hufs.algoing.submitting.controller;
 
+import com.hufs.algoing.problem.entity.ProblemStatus;
 import com.hufs.algoing.submitting.service.SubmittingService;
 import com.hufs.algoing.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,9 @@ public class SubmittingController {
     private final SubmittingService submittingService;
 
     @PostMapping("/{problemId}")
-    public String submit(@PathVariable Long problemId, @RequestBody String code, @RequestParam String language, @AuthenticationPrincipal User p) throws InterruptedException {
-        String handle = p.getHandle();
-        submittingService.submit(problemId, code, language);
-        return "redirect:www.acmicpc.net/status?from_mine=1&problem_id="+problemId+"&user_id="+handle;
+    public ProblemStatus submit(@PathVariable Long problemId, @RequestBody String code, @RequestParam String language, @AuthenticationPrincipal User p) throws InterruptedException {
+//        String handle = p.getHandle();
+        return submittingService.submit(problemId, code, language, p);
     }
 
 
