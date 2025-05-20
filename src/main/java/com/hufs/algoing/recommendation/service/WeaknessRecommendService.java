@@ -2,10 +2,12 @@ package com.hufs.algoing.recommendation.service;
 
 import com.hufs.algoing.aisolved.entity.AISolved;
 import com.hufs.algoing.aisolved.repository.AISolvedRepository;
+import com.hufs.algoing.global.code.ErrorStatus;
+import com.hufs.algoing.global.exception.custom.UserNotFoundException;
 import com.hufs.algoing.problem.entity.Problem;
-import com.hufs.algoing.problem.entity.UserSolvedProblem;
+import com.hufs.algoing.problem.entity.SubmittedProblem;
 import com.hufs.algoing.problem.repository.ProblemRepository;
-import com.hufs.algoing.problem.repository.UserSolvedProblemRepository;
+import com.hufs.algoing.problem.repository.SubmittedProblemRepository;
 import com.hufs.algoing.recommendation.algorithm.WeaknessRecommendAlgorithm;
 import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
 import com.hufs.algoing.review.entity.Review;
@@ -24,7 +26,7 @@ public class WeaknessRecommendService {
 
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
-    private final UserSolvedProblemRepository userSolvedProblemRepository;
+    private final SubmittedProblemRepository submittedProblemRepository;
     private final ReviewRepository reviewRepository;
     private final AISolvedRepository aisolvedRepository;
 
@@ -33,14 +35,14 @@ public class WeaknessRecommendService {
 
         //유저 정보 가져오기
         User user=userRepository.findById(userId)
-                .orElseThrow(()-> new IllegalArgumentException("유저가 받은 리뷰가 없습니다"+userId));
+                .orElseThrow(()-> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
         System.out.println(user);
-        
+
         //전체 문제 가져오기
         List<Problem> allProblems = problemRepository.findAll();
 
         //푼 문제 목록 가져오기
-        List<UserSolvedProblem> allSolvedProblems = userSolvedProblemRepository.findAll();
+        List<SubmittedProblem> allSolvedProblems = submittedProblemRepository.findAll();
 
         //전체 리뷰 가져오기
         List<Review> allReviews = reviewRepository.findAll();

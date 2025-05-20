@@ -1,5 +1,6 @@
 package com.hufs.algoing.user.entity;
 
+import com.hufs.algoing.problem.entity.SubmittedProblem;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,12 +57,9 @@ public class User implements UserDetails {
 
     @Column(name = "user_point")
     private int userPoint;
-//
-//    @OneToMany
-//    private List<Post> post;
-//
-//    @OneToMany
-//    private List<UserSolvedProblem> userSolvedProblem;
+
+    @OneToMany(mappedBy = "userId")
+    private List<SubmittedProblem> submittedProblem;
 
 
     @Builder
@@ -103,6 +101,11 @@ public class User implements UserDetails {
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));
+    }
+
+
+    public void updatePoint(int point) {
+        this.userPoint = point;
     }
 
 

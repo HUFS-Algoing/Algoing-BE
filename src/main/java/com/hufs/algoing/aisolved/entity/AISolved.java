@@ -1,11 +1,15 @@
 package com.hufs.algoing.aisolved.entity;
 
+import com.hufs.algoing.hint.entity.Hint;
 import com.hufs.algoing.problem.entity.Problem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,6 +50,19 @@ public class AISolved {
     @OneToOne
     @JoinColumn(name="problem_id")
     private Problem problem;
+
+    @OneToMany(mappedBy = "aiSolved", cascade = CascadeType.ALL)
+    private List<Hint> hints = new ArrayList<>();
+
+
+
+    public void addHint(Hint hint) {
+        if (this.hints == null) {
+            this.hints = new ArrayList<>();
+        }
+        this.hints.add(hint);
+        hint.updateAISolved(this);
+    }
 
 
 }
