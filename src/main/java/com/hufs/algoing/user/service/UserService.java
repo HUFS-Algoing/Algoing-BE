@@ -1,6 +1,7 @@
 package com.hufs.algoing.user.service;
 
 import com.hufs.algoing.global.code.ErrorStatus;
+import com.hufs.algoing.global.exception.custom.ProblemNotFoundException;
 import com.hufs.algoing.global.exception.custom.UserNotFoundException;
 import com.hufs.algoing.problem.dto.SubmittedProblemDTO;
 import com.hufs.algoing.problem.dto.ZandiDTO;
@@ -157,7 +158,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
         Problem problems = problemRepository.findById(problemId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new ProblemNotFoundException(ErrorStatus.PROBLEM_NOT_FOUND));
 
         //유저가 해당 문제를 북마크한 기록이 있는지 조회
         Optional<BookMark> optional = bookMarkRepository.findByUserIdAndProblemId(bookMarkUser, problems);
