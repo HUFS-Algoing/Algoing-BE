@@ -70,7 +70,7 @@ jobs:
             if kill -0 $APP_PID 2>/dev/null; then
               echo " 배포 성공 (PID: $APP_PID)"
             else
-              echo " 배포 실패"
+              echo " 배포 실패 "
               echo "=== 로그 내용 ==="
               cat app.log
               exit 1
