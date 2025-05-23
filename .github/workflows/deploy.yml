@@ -28,17 +28,6 @@ jobs:
       - name: Check JAR file
         run: ls -al build/libs
 
-      - name: Clean old jars on EC2
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            rm -f /home/ec2-user/app/*.jar
-            rm -rf /home/ec2-user/app/build
-            rm -rf /home/ec2-user/app/build/libs
-
       - name: Copy build jar to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
