@@ -52,4 +52,4 @@ jobs:
               DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               AI_KEY=${{ secrets.AI_KEY }} \
               AI_URL=${{ secrets.AI_URL }} \
-              java -jar $(ls *.jar | tail -n 1) > app.log 2>&1 &
+              java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
