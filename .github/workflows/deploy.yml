@@ -47,7 +47,12 @@ jobs:
             pkill -f 'java -jar' || true
             cd /home/ec2-user/app/build/libs
             
-            echo "DB_URL=\${{ secrets.DB_URL }}" > .env
-            echo "DB_USERNAME=\${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=\${{ secrets.DB_PASSWORD }}" >> .env 
+            echo "DB_URL=${{ secrets.DB_URL }}" > .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "AI_URL=${{ secrets.AI_URL }}" >> .env
+            echo "AI_KEY=${{ secrets.AI_KEY }}" >> .env
+            
+            export $(cat .env | xargs)
+            
             nohup java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
