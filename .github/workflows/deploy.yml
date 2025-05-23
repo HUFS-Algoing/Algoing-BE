@@ -42,18 +42,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "1. 기존 프로세스 확인"
-            ps aux | grep '[j]ava.*algoing.*jar' || echo "실행중인 algoing 프로세스 없음"
+            # 현재 쉘 PID를 변수에 저장
+            CURRENT_PID=$$
 
-            echo "2. 기존 프로세스 종료 시도"
-            JAVA_PID=$(pgrep -f 'java.*algoing.*jar')
-            EXIT_CODE=$?
+            # java algoing jar 프로세스 중 현재 쉘 PID 제외
+            JAVA_PID=$(pgrep -f 'java.*algoing.*jar' | grep -v "^$CURRENT_PID$" || echo "")
 
-            if [ $EXIT_CODE -eq 0 ] && [ ! -z "$JAVA_PID" ]; then
-              echo "기존 프로세스 발견 (PID: $JAVA_PID), 종료 중..."
+            if [ ! -z "$JAVA_PID" ]; then
+              echo "2. 기존 프로세스 발견 (PID: $JAVA_PID), 종료 중..."
               kill $JAVA_PID
               sleep 3
             else
-              echo "종료할 프로세스 없음"
+              echo "2. 종료할 프로세스 없음"
             fi
 
             echo "3. 디렉토리 이동"
@@ -86,5 +86,3 @@ jobs:
               cat app.log
               exit 1
             fi
-
-            exit 0
