@@ -46,10 +46,13 @@ jobs:
           script: |
             pkill -f 'java -jar' || true
             cd /home/ec2-user/app
-            nohup \
-              DB_URL=${{ secrets.DB_URL }} \
-              DB_USERNAME=${{ secrets.DB_USERNAME }} \
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              AI_KEY=${{ secrets.AI_KEY }} \
-              AI_URL=${{ secrets.AI_URL }} \
-              java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+
+            echo "Exporting environment variables..."
+            export DB_URL=${{ secrets.DB_URL }}
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export AI_KEY=${{ secrets.AI_KEY }}
+            export AI_URL=${{ secrets.AI_URL }}
+
+            echo "Starting application..."
+            nohup java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
