@@ -42,11 +42,16 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "1. 기존 프로세스 확인"
-            ps aux | grep java || echo "실행중인 java 프로세스 없음"
+            ps aux | grep '[a]lgoing' || echo "실행중인 algoing 프로세스 없음"
             
             echo "2. 기존 프로세스 종료 시도"
-            pkill -f 'algoing' || echo "종료할 프로세스 없음"
-            sleep 3
+            if pgrep -f 'algoing' > /dev/null; then
+              echo "기존 프로세스 발견, 종료 중..."
+              pkill -f 'algoing'
+              sleep 3
+            else
+              echo "종료할 프로세스 없음"
+            fi
             
             echo "3. 디렉토리 이동"
             cd /home/ec2-user/app
