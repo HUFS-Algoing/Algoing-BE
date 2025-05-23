@@ -44,11 +44,19 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "Killing existing application..."
             pkill -f 'java -jar' || true
             sleep 5
+
+            echo "Navigating to app directory..."
             cd /home/ec2-user/app
-            export $(cat .env | xargs)
-            cd /home/ec2-user/app/build/libs
+
+            echo "Loading environment variables..."
+            if [ -f .env ]; then
+              export $(cat .env | xargs)
+            fi
+
+            echo "Starting application..."
             nohup java -jar algoing-0.0.1-SNAPSHOT.jar \
-            1>/home/ec2-user/app/nohup_stdout.log \
-            2>/home/ec2-user/app/nohup_stderr.log < /dev/null &
+              1>/home/ec2-user/app/nohup_stdout.log \
+              2>/home/ec2-user/app/nohup_stderr.log < /dev/null &
