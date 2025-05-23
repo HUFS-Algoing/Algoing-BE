@@ -43,24 +43,26 @@ jobs:
           script: |
             echo "1. 기존 프로세스 확인"
             ps aux | grep '[j]ava.*algoing.*jar' || echo "실행중인 algoing 프로세스 없음"
-            
+
             echo "2. 기존 프로세스 종료 시도"
-            JAVA_PID=$(pgrep -f 'java.*algoing.*jar' || echo "")
-            if [ ! -z "$JAVA_PID" ]; then
+            JAVA_PID=$(pgrep -f 'java.*algoing.*jar')
+            EXIT_CODE=$?
+
+            if [ $EXIT_CODE -eq 0 ] && [ ! -z "$JAVA_PID" ]; then
               echo "기존 프로세스 발견 (PID: $JAVA_PID), 종료 중..."
               kill $JAVA_PID
               sleep 3
             else
               echo "종료할 프로세스 없음"
             fi
-            
+
             echo "3. 디렉토리 이동"
             cd /home/ec2-user/app
             pwd
-            
+
             echo "4. JAR 파일 확인"
             ls -la *.jar
-            
+
             echo "5. 환경변수 로드"
             if [ -f .env ]; then
               set -o allexport
@@ -68,12 +70,12 @@ jobs:
               set +o allexport
               echo "환경변수 로드됨"
             fi
-            
+
             echo "6. 애플리케이션 시작"
             nohup java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
             APP_PID=$!
             echo "시작된 PID: $APP_PID"
-            
+
             echo "7. 시작 대기 및 확인"
             sleep 5
             if kill -0 $APP_PID 2>/dev/null; then
@@ -84,3 +86,5 @@ jobs:
               cat app.log
               exit 1
             fi
+
+            exit 0
