@@ -47,4 +47,5 @@ jobs:
             pkill -f 'java -jar' || true
             cd /home/ec2-user/app
             export $(cat .env | xargs)
-            nohup java -jar *.jar > app.log 2>&1 &
+            cd /home/ec2-user/app/build/libs
+            nohup java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
