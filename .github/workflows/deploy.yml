@@ -87,13 +87,12 @@ jobs:
 
             echo "4. 애플리케이션 시작"
             nohup java -jar build/libs/algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-            APP_PID=$!
-            echo "시작된 PID: $APP_PID"
-
             sleep 5
 
+            APP_PID=$(pgrep -f 'java.*algoing.*jar')
+
             echo "5. 실행 중인지 확인"
-            if kill -0 $APP_PID 2>/dev/null; then
+            if [ -n "$APP_PID" ]; then
               echo "배포 성공 (PID: $APP_PID)"
             else
               echo "배포 실패"
