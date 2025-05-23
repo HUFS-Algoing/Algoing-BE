@@ -1,36 +1,61 @@
-- name: Deploy and run on EC2
-  uses: appleboy/ssh-action@v0.1.10
-  with:
-    host: ${{ secrets.EC2_HOST }}
-    username: ${{ secrets.EC2_USER }}
-    key: ${{ secrets.EC2_SSH_KEY }}
-    script: |
-      echo "=== Killing existing application ==="
-      pkill -f 'java -jar' || true
-      sleep 5
+name: Deploy to AWS EC2
 
-      echo "=== Move to app dir ==="
-      cd /home/ec2-user/app
+on:
+  push:
+    branches:
+      - 'release*'
 
-      echo "=== Load .env if exists ==="
-      if [ -f .env ]; then
-        echo ".env exists, loading..."
-        cat .env
-        export $(cat .env | xargs)
-      else
-        echo "No .env file found"
-      fi
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-      echo "=== List app directory ==="
-      ls -al /home/ec2-user/app
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-      echo "=== Try running JAR ==="
-      if [ -f algoing-0.0.1-SNAPSHOT.jar ]; then
-        nohup java -jar algoing-0.0.1-SNAPSHOT.jar \
-          1>/home/ec2-user/app/nohup_stdout.log \
-          2>/home/ec2-user/app/nohup_stderr.log < /dev/null & disown
-        echo "=== JAR executed ==="
-      else
-        echo "JAR file not found!"
-        exit 1
-      fi
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/libs/algoing-0.0.1-SNAPSHOT.jar"
+          target: "/home/ec2-user/app/"
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            pkill -f 'java -jar' || true
+            sleep 5
+            cd /home/ec2-user/app
+            
+            if [ -f .env ]; then
+              export $(cat .env | xargs)
+            fi
+            
+            nohup java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+            
+            sleep 10
+            if pgrep -f 'java -jar' > /dev/null; then
+              echo "배포 성공"
+            else
+              echo "배포 실패"
+              tail -20 app.log
+              exit 1
+            fi
