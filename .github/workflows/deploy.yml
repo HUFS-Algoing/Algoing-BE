@@ -45,14 +45,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             pkill -f 'java -jar' || true
-            cd /home/ec2-user/app
-
-            echo "Exporting environment variables..."
-            export DB_URL=${{ secrets.DB_URL }}
-            export DB_USERNAME=${{ secrets.DB_USERNAME }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export AI_KEY=${{ secrets.AI_KEY }}
-            export AI_URL=${{ secrets.AI_URL }}
-
-            echo "Starting application..."
+            cd /home/ec2-user/app/build/libs
+            
+            echo "DB_URL=\${{ secrets.DB_URL }}" > .env
+            echo "DB_USERNAME=\${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=\${{ secrets.DB_PASSWORD }}" >> .env 
             nohup java -jar algoing-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
