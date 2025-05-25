@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "힌트 API", description = "힌트 요청 API")
@@ -26,9 +23,10 @@ public class HintController {
     @Operation(summary = "힌트 요청 API", description = "특정 문제 번호의 특정 순서 힌트를 가져옵니다.")
     @Parameter(name = "problemId", description = "요청 힌트 문제 번호")
     @Parameter(name = "hintOrder", description = "요청 힌트 순서")
-    public ApiResponse<HintResponseDTO> getHint(@PathVariable Long problemId, @PathVariable int hintOrder, @AuthenticationPrincipal User user) {
+    @Parameter(name = "userId", description = "사용자 ID")
+    public ApiResponse<HintResponseDTO> getHint(@PathVariable Long problemId, @PathVariable int hintOrder, @RequestParam Long userId) {
         Hint hint = hintService.getHint(problemId, hintOrder);
-        hintService.minusPoint(user);
+        hintService.minusPoint(userId);
         return ApiResponse.onSuccess(HintResponseDTO.fromEntity(hint.getContent(),hint.getOrder()));
     }
 

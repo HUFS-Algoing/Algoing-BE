@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hufs.algoing.global.chatgpt.service.GPTService;
 
+import com.hufs.algoing.global.code.ErrorStatus;
+import com.hufs.algoing.global.exception.custom.UserNotFoundException;
 import com.hufs.algoing.review.dto.ReviewRequestDTO;
 import com.hufs.algoing.review.dto.ReviewResponseDTO;
 import com.hufs.algoing.review.entity.Review;
@@ -43,7 +45,7 @@ public class ReviewService {
         return new ReviewResponseDTO(review.getSummary());
     }
 
-    public Mono<ReviewResponseDTO> handleReview(ReviewRequestDTO dto, User user) {
+    public Mono<ReviewResponseDTO> handleReview(ReviewRequestDTO dto, Long userId) {
 
         log.info(dto.toString());
         Mono<JsonNode> readReviewMono = handleReadReview(dto)
@@ -67,6 +69,8 @@ public class ReviewService {
                     return handlesummary(readReview, optReview, dupReview)
 
                             .flatMap(summary -> {
+                                User user=userRepository.findById(userId)
+                                        .orElseThrow(()-> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
                                 String finalSummary = summary.get("review").asText();
 
