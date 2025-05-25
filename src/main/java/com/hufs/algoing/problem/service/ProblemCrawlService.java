@@ -12,7 +12,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,5 +81,27 @@ public class ProblemCrawlService{
             throw new RuntimeException("크롤링 중 오류 발생", e);
         }
     }
+
+    public List<Problem> crawlProblemsByTierAndTag(String tag, int minTier, int maxTier, int count) {
+        List<SolvedAcProblemDTO> problems = solvedAcService.getProblemsByTagAndTier(tag, minTier, maxTier, count * 3);
+
+        // 중복 제거용 Set
+        Set<Long> visited = new HashSet<>();
+        List<Problem> uniqueProblems = new ArrayList<>();
+
+        for (SolvedAcProblemDTO dto : problems) {
+            String problemId = dto.getProblemId();
+            if (!visited.contains(Long.valueOf(problemId))) {
+                visited.add(Long.valueOf(problemId));
+                Problem prob = crawlProblem(Long.valueOf(problemId));
+                uniqueProblems.add(prob);
+                System.out.println("크롤링한 문제 ID: " + problemId);
+            }
+            if (uniqueProblems.size() >= count) break;
+        }
+
+        return uniqueProblems;
+    }
+
 
 }
