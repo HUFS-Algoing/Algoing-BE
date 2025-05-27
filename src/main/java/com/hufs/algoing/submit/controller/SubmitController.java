@@ -29,7 +29,7 @@ public class SubmitController {
     private final WebClient.Builder webClientBuilder;
 
     // 캡차 해결 + 자동 제출
-    // Todo - 추후 AuthenticationPrincipal 도입
+
     @PostMapping
     public ApiResponse<RecaptchaResponseDTO> solveCaptcha(@RequestBody SubmitRequestDTO dto) {
         RecaptchaRequestDTO recapDTO = submitService.submit(dto, dto.getUserId());
