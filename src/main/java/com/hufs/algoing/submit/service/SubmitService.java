@@ -63,7 +63,7 @@ public class SubmitService {
                 .bodyValue(recapDTO)
                 .retrieve()
                 .bodyToMono(RecaptchaResponseDTO.class)
-                .timeout(Duration.ofSeconds(60))
+                .timeout(Duration.ofSeconds(180))
                 .doOnError(e -> log.error("파이썬 서버 요청 중 오류 발생", e))
                 .onErrorReturn(new RecaptchaResponseDTO() {{
                     setMessage("TimeOut 또는 Error 발생");
