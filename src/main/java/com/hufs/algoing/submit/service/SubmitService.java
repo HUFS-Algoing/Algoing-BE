@@ -57,7 +57,6 @@ public class SubmitService {
 
         RecaptchaResponseDTO result = webClientBuilder.build()
                 .post()
-                //.uri("http://43.200.206.181:5000/start")
                 .uri("http://43.200.206.181:5000/start")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(recapDTO)
