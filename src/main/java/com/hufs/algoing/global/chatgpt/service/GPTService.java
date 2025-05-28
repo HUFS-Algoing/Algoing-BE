@@ -49,15 +49,21 @@ public class GPTService {
     @SneakyThrows
     public void analyzeAllProblems() {
         List<Problem> problems = problemRepository.findAll();
+
         Flux.fromIterable(problems)
                 .filter(problem -> aiSolvedRepository.findByProblem_ProblemId(problem.getProblemId()) == null)
-                .parallel()
-                .runOn(Schedulers.boundedElastic())
-                .flatMap(this::analyzeAndSave)
-                .sequential()
+                .buffer(20) // 20개씩 묶음
+                .concatMap(batch -> Flux.fromIterable(batch)
+                        .parallel()
+                        .runOn(Schedulers.boundedElastic())
+                        .flatMap(this::analyzeAndSave)
+                        .sequential()
+                        .then() // 각 batch 처리 끝날 때까지 기다리기
+                )
                 .doOnComplete(() -> log.info("모든 문제를 분석 완료했습니다."))
                 .subscribe();
     }
+
 
     private Mono<Void> analyzeAndSave(Problem problem) {
 

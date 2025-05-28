@@ -1,3 +1,9 @@
+server:
+  port: 8080
+  address: 0.0.0.0
+  forward-headers-strategy: framework
+
+
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -34,4 +40,4 @@ springdoc:
   swagger-ui:
     operations-sorter: method
     tags-sorter: alpha
-    path: "swagger.html" # http://localhost:8080/swagger.html로 접속 가능
+    path: "swagger.html"

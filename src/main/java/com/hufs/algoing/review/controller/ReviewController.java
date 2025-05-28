@@ -7,6 +7,7 @@ import com.hufs.algoing.review.entity.Review;
 import com.hufs.algoing.review.service.ReviewService;
 import com.hufs.algoing.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,10 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(summary = "리뷰 요청 API", description = "해당 문제에 대한 AI 리뷰를 요청합니다.")
+    @Parameter(name = "userId", description = "사용자 ID")
     @PostMapping
-    public Mono<ApiResponse<ReviewResponseDTO>> requestReview(@RequestBody ReviewRequestDTO dto, @AuthenticationPrincipal User user) {
-        return reviewService.handleReview(dto,user)
+    public Mono<ApiResponse<ReviewResponseDTO>> requestReview(@RequestBody ReviewRequestDTO dto, @RequestParam  Long userId) {
+        return reviewService.handleReview(dto,userId)
                 .map(reviewResponseDto -> ApiResponse.onSuccess(reviewResponseDto));
     }
 
