@@ -66,5 +66,10 @@ public class SubmittedProblem {
         this.submittedDate = LocalDate.now();
     }
 
+    //Solved일때만 true
+    public boolean isCorrect() {
+        return this.status == ProblemStatus.SOLVED;
+    }
+
 
 }
