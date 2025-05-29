@@ -4,6 +4,7 @@ import com.hufs.algoing.problem.entity.Problem;
 import com.hufs.algoing.problem.entity.SubmittedProblem;
 import com.hufs.algoing.problem.repository.ProblemRepository;
 import com.hufs.algoing.recommendation.dto.IncProblemRecommendDTO;
+import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
 import com.hufs.algoing.user.entity.User;
 import com.hufs.algoing.problem.repository.SubmittedProblemRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,32 @@ public class IncProblemRecommendAlgorithm {
         //유저가 제출한 문제 가져오기
         List<SubmittedProblem> userSubmitted = submittedProblemRepository.findByUserId(user);
 
+        //제출한 문제가 7개 이하면 해당 유저 티어 +-2차이의 문제 추천
+        if(userSubmitted==null || userSubmitted.size()==0 || userSubmitted.size() <= 7){
+            int userLevel = user.getTier(); // 유저 티어
+            List<Problem> allProblems = problemRepository.findAll();
+
+            List<Problem> randomProblem = allProblems.stream()
+                    .filter(p -> Math.abs(p.getLevel() - userLevel) <= 2) // 티어 ±2
+                    .filter(p -> !userSubmitted.contains(p.getProblemId())) // 이미 푼 문제 제외
+                    .limit(3)
+                    .collect(Collectors.toList());
+
+
+            return randomProblem.stream()
+                    .map(p -> new IncProblemRecommendDTO(
+                            p.getProblemId(),
+                            p.getTitle(),
+                            p.getTag()
+                    ))
+                    .collect(Collectors.toList());
+        }
+
         //유저가 푼 문제 태그 추출
         List<String> userSubmittedTags = calculateUserSubmitTags(user, userSubmitted);
 
         //유형별 정답률 계산
-        Map<String,Double> correctRates=calculateTagACorrectRate(userSubmitted);
+        Map<String,Double> correctRates=calculateTagCorrectRate(userSubmitted);
 
         //정답률이 낮은 상위 3개 태그 선정
         //점수가 같을시 태그 이름순 정렬
@@ -79,7 +101,7 @@ public class IncProblemRecommendAlgorithm {
 
     //백준 정답률=(맞은 문제 수) / (맞은 문제 수 + 첫 번째 맞기 전 까지 틀린 횟수)
     //유형별 정답률 구하기
-    private static Map<String,Double> calculateTagACorrectRate(List<SubmittedProblem> submittedProblems){
+    private static Map<String,Double> calculateTagCorrectRate(List<SubmittedProblem> submittedProblems){
         //제출 기록 묶기
         Map<Problem, List<SubmittedProblem>> groupedProblems = submittedProblems.stream()
                 .collect(Collectors.groupingBy(SubmittedProblem::getProblemId));
