@@ -1,7 +1,13 @@
 package com.hufs.algoing.submit.service;
 
 import com.hufs.algoing.global.code.ErrorStatus;
+import com.hufs.algoing.global.exception.custom.ProblemNotFoundException;
 import com.hufs.algoing.global.exception.custom.UserNotFoundException;
+import com.hufs.algoing.problem.entity.Problem;
+import com.hufs.algoing.problem.entity.ProblemStatus;
+import com.hufs.algoing.problem.entity.SubmittedProblem;
+import com.hufs.algoing.problem.repository.ProblemRepository;
+import com.hufs.algoing.problem.repository.SubmittedProblemRepository;
 import com.hufs.algoing.submit.dto.RecaptchaRequestDTO;
 import com.hufs.algoing.submit.dto.RecaptchaResponseDTO;
 import com.hufs.algoing.submit.dto.SubmitRequestDTO;
@@ -24,6 +30,8 @@ public class SubmitService {
     private final UserRepository userRepository;
     private final WebClient.Builder webClientBuilder;
     private final UserService userService;
+    private final ProblemRepository problemRepository;
+    private final SubmittedProblemRepository submittedProblemRepository;
 
     public RecaptchaRequestDTO submit(SubmitRequestDTO dto) throws Exception {
 
@@ -43,16 +51,37 @@ public class SubmitService {
     }
 
     // 포인트 적립
-    public void judgePoint(RecaptchaResponseDTO dto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
-        if (dto.isCorrect()) {
+    public void judgePoint(Problem problem, RecaptchaResponseDTO resultDTO, User user)  {
+        if(resultDTO.isCorrect()){
             int originPoint = user.getUserPoint();
-            user.updatePoint(originPoint + 5);
+            Long level  = problem.getLevel();
+
+            if(level>=1 && level<=5){ // bronze
+                user.updatePoint(originPoint+5);
+            }
+            else if (level>=6 && level<=10) { // silver
+                user.updatePoint(originPoint+10);
+            }
+            else if (level>=11 && level<=15){ // gold
+                user.updatePoint(originPoint+15);
+            }
+            else if (level>=16 && level<=20){ // platinum
+                user.updatePoint(originPoint+20);
+            }
+            else if(level>=21 && level<=25){ // diamond
+                user.updatePoint(originPoint+25);
+            }
+            else if(level>=26 && level<=30){ // ruby
+                user.updatePoint(originPoint+30);
+            }
+            log.info("유저 id - {}의 포인트가 {}에서 {}로 증가했습니다.", user.getUserId(), originPoint, user.getUserPoint());
         }
-        log.info("유저 id {}의 포인트가 {}로 증가했습니다.", user.getUserId(), user.getUserPoint());
     }
 
     public RecaptchaResponseDTO solveAndJudge(SubmitRequestDTO dto) throws Exception {
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(()-> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
+        ProblemStatus status;
+
         RecaptchaRequestDTO recapDTO = submit(dto);
 
         RecaptchaResponseDTO result = webClientBuilder.build()
@@ -70,8 +99,27 @@ public class SubmitService {
                 }})
                 .block();
 
+        Problem problem = problemRepository.findById(dto.getProblemNum()).orElseThrow(()-> new ProblemNotFoundException(ErrorStatus.PROBLEM_NOT_FOUND));
+
         // 결과에 따라 포인트 적립
-        judgePoint(result, dto.getUserId());
+        judgePoint(problem, result, user);
+
+        if(result.isCorrect()){
+            status = ProblemStatus.SOLVED;
+        }else{
+            status = ProblemStatus.FAILED;
+        }
+
+        SubmittedProblem submitted = SubmittedProblem.builder()
+                .userId(user)
+                .problemId(problem)
+                .answer(dto.getCode())
+                .language(dto.getLanguage())
+                .status(status)
+                .build();
+
+        // 제출 문제 저장
+        submittedProblemRepository.save(submitted);
 
         return result;
     }
