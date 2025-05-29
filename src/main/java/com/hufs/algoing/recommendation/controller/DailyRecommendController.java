@@ -13,7 +13,7 @@ import java.util.List;
 
 @Tag(name = "데일리 문제 추천 API", description = "데일리 문제 추천 API")
 @RestController
-@RequestMapping("/api/dailyRecommendations")
+@RequestMapping("/api/dailyrecommendations")
 @RequiredArgsConstructor
 public class DailyRecommendController {
 

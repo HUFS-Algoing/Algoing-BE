@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-
 public class WeaknessRecommendDTO {
     private Problem problem;
     private double finalScore;

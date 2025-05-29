@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class WeaknessRecommendAlgorithm {
 
-    //추천에 관여하는 팩터
+    //추천에 관여하는 요소
     //1.가독성(함수명, 변수명, 코드 구조) 점수
     //2.최적화 (시간 복잡도와 공간 복잡도) 점수
     //3.코드 중복성(함수화 또는 리팩토링을 통해 중복을 줄일 수 있는 방법) 점수

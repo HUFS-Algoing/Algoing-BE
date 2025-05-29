@@ -14,7 +14,7 @@ import java.util.List;
 
 @Tag(name = "약점 기반 문제 추천 API", description = "약점 기반 문제 추천 API")
 @RestController
-@RequestMapping("/api/weaknessRecommendations")
+@RequestMapping("/api/weaknessrecommendations")
 @RequiredArgsConstructor
 
 public class WeaknessRecommendController {
