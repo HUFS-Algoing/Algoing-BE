@@ -2,6 +2,7 @@ package com.hufs.algoing.recommendation.algorithm;
 
 import com.hufs.algoing.problem.entity.Problem;
 import com.hufs.algoing.problem.entity.SubmittedProblem;
+import com.hufs.algoing.problem.repository.ProblemRepository;
 import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
 import com.hufs.algoing.review.entity.Review;
 import com.hufs.algoing.user.entity.User;
@@ -20,7 +21,6 @@ public class WeaknessRecommendAlgorithm {
     //2.최적화 (시간 복잡도와 공간 복잡도) 점수
     //3.코드 중복성(함수화 또는 리팩토링을 통해 중복을 줄일 수 있는 방법) 점수
     //7.문제유형
-
     private static final int MAX_WEAKNESS=15; //점수 차이 15점 이내 문제 추천
 
     public static List<WeaknessRecommendDTO> recommend(User user, List<Review> userReviewProblem, List<AISolved> aisolvedProblem, List<SubmittedProblem> submittedProblems, List<Problem> problems) {
@@ -29,6 +29,31 @@ public class WeaknessRecommendAlgorithm {
         List<Review> userReview = userReviewProblem.stream()
                 .filter(review -> review.getUser().getUserId().equals(user.getUserId()))
                 .collect(Collectors.toList());
+
+        System.out.println(userReview);
+
+        //리뷰가 7개 이하면 해당 유저 티어 +-2차이의 문제 추천
+       if(userReview==null || userReview.size()==0 || userReview.size() <= 7){
+           int userLevel = user.getTier(); // 유저 티어
+           List<Problem> randomProblem = problems.stream()
+                   .filter(p -> Math.abs(p.getLevel() - userLevel) <= 2) // 유저 티어 ±2
+                   .filter(p -> !submittedProblems.contains(p.getProblemId())) // 이미 푼 문제 제외
+                   .limit(3) // 3개 추천
+                   .collect(Collectors.toList());
+
+           System.out.println("User Level: " + userLevel);
+           System.out.println("Submitted Problems: " + submittedProblems.size());
+           System.out.println("Total Problems: " + problems.size());
+
+           return randomProblem.stream()
+                   .map(p -> new WeaknessRecommendDTO(
+                           p.getProblemId(),
+                           p.getTitle(),
+                           p.getTag(),
+                           0.0 // 기본 점수 없음
+                   ))
+                   .collect(Collectors.toList());
+       }
 
         //약점 분석-각 점수 평균
         //유저 가독성 평균 계산
@@ -97,7 +122,7 @@ public class WeaknessRecommendAlgorithm {
                         e -> e.getValue()/(double)problems.size())); //value 전체 문제 수로 정규화
 
         //최종 점수 계산(점수 기반 가중치 + 유형 선호도 가중치)
-        List<WeaknessRecommendDTO> recommendProblems = (List<WeaknessRecommendDTO>) aiSolvedList.stream()
+        List<WeaknessRecommendDTO> recommendProblems = aiSolvedList.stream()
                 .map(r -> {
 
                     //문제별 점수 벡터
@@ -131,9 +156,10 @@ public class WeaknessRecommendAlgorithm {
                 double finalScore = typeWeightSum * 0.4 + distanceScore * 0.6; //유형은 결과에 40% 영향 점수는 60% 영향
 
                 //결과 DTO
-                return new WeaknessRecommendDTO(r.getProblem(),finalScore);
+                return new WeaknessRecommendDTO(r.getId(),r.getProblem().getTitle(), r.getProblem().getTag(), finalScore);
                 })
                 .collect(Collectors.toList());
+
 
         // 유저가 푼 문제들의 ID만 추출
         Set<Long> solvedProblemIds = submittedProblems.stream()
@@ -143,7 +169,7 @@ public class WeaknessRecommendAlgorithm {
 
         // 추천 리스트에서 이미 푼 문제 제거
         List<WeaknessRecommendDTO> filteredRecommendProblems = recommendProblems.stream()
-                .filter(dto -> !solvedProblemIds.contains(dto.getProblem().getProblemId()))
+                .filter(dto -> !solvedProblemIds.contains(dto.getProblemId()))
                 .collect(Collectors.toList());
 
         filteredRecommendProblems.forEach(problem -> {

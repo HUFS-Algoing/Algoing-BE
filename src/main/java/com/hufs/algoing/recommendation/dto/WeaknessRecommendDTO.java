@@ -9,13 +9,19 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class WeaknessRecommendDTO {
-    private Problem problem;
+    private Long problemId;
+    private String title;
+    private String tag;
     private double finalScore;
 
     @Override
     public String toString() {
         return "WeaknessRecommendDTO{" +
-                "problem=" + problem.getProblemId() +
+                "problemId=" + problemId +
+                ", title=" + title +
+                ", tag=" + tag +
                 ", finalScore=" + finalScore +
-                '}';}
+                '}';
+    }
+
 }
