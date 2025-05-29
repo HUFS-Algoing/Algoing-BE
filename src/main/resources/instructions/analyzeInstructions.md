@@ -78,7 +78,7 @@ Data 3: Time limit, memory limit
 - Aren't the same code duplicated in multiple locations?
 - Is it easy to understand the code?
 - Please provide a JSON object in the following format:
-- The fields hint1, hint2, and hint3 must be written in Korean.
+- The number of hints must be three, and the Hint 1, Hint 2, and Hint 3 fields must be written in Korean.
 - The fields readTip, optTip, dupTip and pattern must be written in English.
 
 **Example Instruction for Making a Decision (JSON format)**

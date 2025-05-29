@@ -11,6 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
@@ -25,7 +30,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers(toH2Console())
+                //.requestMatchers(toH2Console())
                 .requestMatchers("/static/**");
     }
 
@@ -33,8 +38,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+                .cors()
+                .and()
                 .authorizeRequests() // 인증, 인가 설정
-                .requestMatchers("/login", "/signup", "/**").permitAll()
+                .requestMatchers("/login", "/signup", "/swagger.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin() // 폼 기반 로그인 설정
@@ -48,6 +60,20 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable() // csrf 비활성화 -> 실습을 위해 잠깐 비활성화!!
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("https://your-frontend.vercel.app","http://43.200.206.181:8080", "http://43.200.206.181:5000", "http://localhost:8080", "http://localhost:3000", "http://localhost:5000", "https://api.al-going.com"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     // 인증 관리자 관련 설정
