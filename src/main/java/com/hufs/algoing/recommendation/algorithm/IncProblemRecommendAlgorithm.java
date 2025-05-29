@@ -4,7 +4,6 @@ import com.hufs.algoing.problem.entity.Problem;
 import com.hufs.algoing.problem.entity.SubmittedProblem;
 import com.hufs.algoing.problem.repository.ProblemRepository;
 import com.hufs.algoing.recommendation.dto.IncProblemRecommendDTO;
-import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
 import com.hufs.algoing.user.entity.User;
 import com.hufs.algoing.problem.repository.SubmittedProblemRepository;
 import lombok.RequiredArgsConstructor;

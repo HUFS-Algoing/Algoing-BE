@@ -40,10 +40,6 @@ public class WeaknessRecommendAlgorithm {
                    .limit(3) // 3개 추천
                    .collect(Collectors.toList());
 
-           System.out.println("User Level: " + userLevel);
-           System.out.println("Submitted Problems: " + submittedProblems.size());
-           System.out.println("Total Problems: " + problems.size());
-
            return randomProblem.stream()
                    .map(p -> new WeaknessRecommendDTO(
                            p.getProblemId(),
