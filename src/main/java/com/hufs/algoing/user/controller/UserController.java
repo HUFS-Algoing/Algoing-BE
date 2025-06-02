@@ -26,18 +26,18 @@ public class UserController {
     private final SolvedAcService solvedAcService;
 
     @Operation(summary = "유저 정보 조회", description = "해당 유저 ID를 기반으로 유저 정보를 조회합니다.")
-    @GetMapping("/{handle}")
-    public ApiResponse<String> getUser(@PathVariable String handle) {
+    @GetMapping("/{bojId}")
+    public ApiResponse<String> getUser(@PathVariable String bojId) {
         //임시
-        SolvedAcProfileDTO profile = solvedAcService.getSolvedAcProfile(handle);
+        SolvedAcProfileDTO profile = solvedAcService.getSolvedAcProfile(bojId);
         return ApiResponse.onSuccess(profile.getBio() + " " + profile.getTier() + " " + profile.getSolvedCount() + " " + profile.getProfileImageUrl());
     }
 
-    @Operation(summary = "유저 정보 업데이트", description = "해당 유저 ID를 기반으로 유저 정보를 업데이트합니다.")
-    @PutMapping("/{handle}")
-    public ApiResponse<String> updateUser(@PathVariable String handle) {
-        userService.updateUserData(handle);
-        return ApiResponse.onSuccess("User data updated successfully");
+    @Operation(summary = "Solved.ac 정보 업데이트", description = "해당 유저 ID를 기반으로 Solved.ac에서의 정보를 불러옵니다.")
+    @PutMapping("/{bojId}")
+    public ApiResponse<String> updateUser(@PathVariable String bojId) {
+        userService.updateUserSolvedAcData(bojId);
+        return ApiResponse.onSuccess(bojId + "의 정보가 업데이트 되었습니다.");
     }
 
     @Tag(name = "Mypage", description = "")

@@ -44,7 +44,7 @@ public class UserInfoController {
         return ApiResponse.onSuccess(userInfoDTO);
     }
 
-    @Operation(summary = "Zandi", description = "해당 유저 ID를 기반으로 유저 제출문제를 조회하여 날짜와 날짜별 성공문제 수 반환.")
+    @Operation(summary = "Zandi", description = "해당 유저 ID를 기반으로 유저 제출문제를 조회하여 날짜와 날짜별 성공문제 수 반환. 로그인 되어있어야 합니다.")
     @GetMapping("/zandi")
     public ApiResponse<List<ZandiDTO>> getUserZandi(
             @AuthenticationPrincipal PrincipalDetails p) {

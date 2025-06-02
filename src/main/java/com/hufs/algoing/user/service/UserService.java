@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -45,8 +44,6 @@ public class UserService {
     @Autowired
     private SolvedAcService solvedAcService;
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
     private SubmittedProblemRepository submittedProblemRepository;
     @Autowired
     private BookMarkRepository bookMarkRepository;
@@ -56,11 +53,17 @@ public class UserService {
     @Autowired
     private ProblemRepository problemRepository;
 
-    public void updateUserData(String handle) {
+    public User getUserByUserId(Long userId) {
+        // User 엔티티를 userId로 조회
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
+    }
+
+    public void updateUserSolvedAcData(String bojId) {
         // solved.ac API로부터 유저 정보 가져오기
-        SolvedAcProfileDTO profile = solvedAcService.getSolvedAcProfile(handle);
+        SolvedAcProfileDTO profile = solvedAcService.getSolvedAcProfile(bojId);
         // User 엔티티로 변환 후 저장
-        User user = userRepository.findByHandle(handle)
+        User user = userRepository.findByBojId(bojId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setBio(profile.getBio());
         user.setTier(profile.getTier());
@@ -71,23 +74,18 @@ public class UserService {
     }
 
     // 가입 후 핸들 입력
-    public Long insertBoj(UserDTO userDTO, @AuthenticationPrincipal PrincipalDetails principal) throws Exception {
+    public void insertBoj(UserDTO userDTO, @AuthenticationPrincipal PrincipalDetails principal) throws Exception {
 // 현재 인증된 사용자의 이메일로 User 엔티티를 조회
         User user = userRepository.findByEmail(principal.getUser().getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
 
-        // userDTO에서 핸들 값을 가져와서 User 엔티티에 저장
-        user.setHandle(userDTO.getHandle());
         user.setBojId(userDTO.getBojId());
         user.setBojPassword(encrypt(userDTO.getBojPassword()));
         // User 엔티티를 저장
         userRepository.save(user);
 
         // SolvedAcService를 사용하여 유저 정보를 업데이트
-        updateUserData(userDTO.getHandle());
-
-        // 생성된 ID를 반환
-        return user.getUserId();
+        updateUserSolvedAcData(userDTO.getBojId());
     }
 
     public List<ZandiDTO> getUserActivity(User user) {

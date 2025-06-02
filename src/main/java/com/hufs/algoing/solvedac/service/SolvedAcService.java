@@ -13,9 +13,9 @@ import java.util.List;
 public class SolvedAcService {
 //    private static final String API_URL = "https://solved.ac/api/v3/user/show?handle=";
 
-    public SolvedAcProfileDTO getSolvedAcProfile(String handle) {
+    public SolvedAcProfileDTO getSolvedAcProfile(String bojId) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://solved.ac/api/v3/user/show?handle=" + handle;
+        String url = "https://solved.ac/api/v3/user/show?handle=" + bojId;
 
         ResponseEntity<SolvedAcProfileDTO> response = restTemplate.getForEntity(url, SolvedAcProfileDTO.class);
         return response.getBody(); // JSON 데이터를 UserProfile 객체로 매핑
@@ -38,8 +38,6 @@ public class SolvedAcService {
         if (response == null || response.getItems() == null) return List.of();
         return response.getItems().stream().limit(count).toList();
     }
-
-
 
 
 }
