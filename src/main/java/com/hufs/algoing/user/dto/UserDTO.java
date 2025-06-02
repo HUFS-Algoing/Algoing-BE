@@ -7,8 +7,6 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
 
-    private String handle;
-
     private String bojId;
     private String bojPassword;
 
