@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "User Auth API", description = "유저 로그인 API")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class UserAuthController {
 
     private final UserService userService;
