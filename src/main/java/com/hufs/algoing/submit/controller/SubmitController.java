@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/submit")
+@RequestMapping("/api/submit")
 @Slf4j
 @Tag(name = "Submit API", description = "문제 제출 및 채점 API")
 public class SubmitController {
