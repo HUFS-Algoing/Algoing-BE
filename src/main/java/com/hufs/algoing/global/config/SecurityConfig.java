@@ -6,6 +6,7 @@ import com.hufs.algoing.user.entity.Role;
 import com.hufs.algoing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -127,6 +128,14 @@ public class SecurityConfig {
         serializer.setCookiePath("/");
         return serializer;
     }
+    @Bean
+    public FilterRegistrationBean<SameSiteCookieFilter> sameSiteCookieFilter() {
+        FilterRegistrationBean<SameSiteCookieFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new SameSiteCookieFilter());
+        registration.addUrlPatterns("/*");
+        return registration;
+    }
+
 
     @Bean
     public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
