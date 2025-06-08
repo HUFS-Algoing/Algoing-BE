@@ -12,16 +12,14 @@ public class SameSiteCookieFilter implements Filter {
             throws IOException, ServletException {
         HttpServletResponse res = (HttpServletResponse) response;
         chain.doFilter(request, response);
-        // 응답이 커밋된 후에는 헤더를 수정할 수 없으므로, 필터 체인 실행 전에 처리
-        addSameSiteCookieAttribute(res);
-    }
-
-    private void addSameSiteCookieAttribute(HttpServletResponse response) {
-        Collection<String> headers = response.getHeaders("Set-Cookie");
+        Collection<String> headers = res.getHeaders("Set-Cookie");
         for (String header : headers) {
             if (header.contains("JSESSIONID")) {
-                String updatedHeader = header + "; SameSite=None; Secure";
-                response.setHeader("Set-Cookie", updatedHeader);
+                String updatedHeader = header;
+                if (!header.contains("SameSite=None")) updatedHeader += "; SameSite=None";
+                if (!header.contains("Secure")) updatedHeader += "; Secure";
+                if (!header.contains("Domain=.al-going.com")) updatedHeader += "; Domain=.al-going.com";
+                res.setHeader("Set-Cookie", updatedHeader);
             }
         }
     }
