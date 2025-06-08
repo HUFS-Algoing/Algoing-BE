@@ -22,7 +22,6 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -37,18 +36,14 @@ public class SecurityConfig {
     @Autowired
     private UserRepository userRepository;
 
-    // 스프링 시큐리티 기능 비활성화
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                //.requestMatchers(toH2Console())
                 .requestMatchers("/static/**");
     }
 
-    // 특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -57,18 +52,15 @@ public class SecurityConfig {
                         corsConfig.configurationSource(corsConfigurationSource())
                 )
                 .authorizeHttpRequests((auth) -> auth
-
-                        .requestMatchers
-                                ("/admin/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers
-                                ("/login", "/signup").permitAll()
+                        .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/login", "/signup").permitAll()
                         .requestMatchers("/oauth2/authorization/**").permitAll()
-                        .requestMatchers
-                                ("/swagger.html", "/swagger-ui/**",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources/**",
-                                        "/webjars/**",
-                                        "/**").permitAll()
+                        .requestMatchers(
+                                "/swagger.html", "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login((oauth) -> oauth
@@ -86,27 +78,21 @@ public class SecurityConfig {
                                 .invalidateHttpSession(true)
                 );
         return http.build();
-
-    }
-    @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    public CorsFilter corsFilter() {
-        return new CorsFilter(corsConfigurationSource());
     }
 
-
+    // CORS 설정 (CorsFilter는 불필요)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // allowedOrigins → allowedOriginPatterns로 변경
         configuration.setAllowedOriginPatterns(List.of(
-                "https://*.al-going.com",
+                "https://www.al-going.com",
+                "https://al-going.com",
                 "http://localhost:*",
                 "http://43.200.206.181:*"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Set-Cookie", "Authorization")); // 추가
+        configuration.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -118,16 +104,15 @@ public class SecurityConfig {
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("JSESSIONID");
-        serializer.setSameSite("None"); // 크로스 도메인 쿠키 허용
-        serializer.setUseSecureCookie(true); // HTTPS 전용
-        serializer.setDomainName("al-going.com"); // 상위 도메인으로 설정
+        serializer.setSameSite("None");
+        serializer.setUseSecureCookie(true);
+        serializer.setDomainName(".al-going.com");
         serializer.setCookiePath("/");
         return serializer;
     }
+
     @Bean
     public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
-
-
 }
