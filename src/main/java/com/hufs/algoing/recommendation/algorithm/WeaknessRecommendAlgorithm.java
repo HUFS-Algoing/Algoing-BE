@@ -161,7 +161,7 @@ public class WeaknessRecommendAlgorithm {
                     return new WeaknessRecommendDTO(
                             r.getProblem().getProblemId(),
                             r.getProblem().getTitle(),
-                            r.getProblem().getTag(),
+                            r.getProblem().getTagNames(),
                             r.getProblem().getLevel(),
                             finalScore
                     );
