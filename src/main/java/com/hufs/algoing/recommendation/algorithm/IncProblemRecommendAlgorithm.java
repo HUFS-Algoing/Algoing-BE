@@ -91,7 +91,7 @@ public class IncProblemRecommendAlgorithm {
                 .collect(Collectors.toList());
 
         return recommendProblems.stream()
-                .map(p -> new IncProblemRecommendDTO(p.getProblemId(), p.getTitle(), p.getTag(),p.getLevel()))
+                .map(p -> new IncProblemRecommendDTO(p.getProblemId(), p.getTitle(), p.getTagNames(),p.getLevel()))
                 .collect(Collectors.toList());
     }
 
