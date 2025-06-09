@@ -53,7 +53,7 @@ public class DailyRecommendAlgorithm {
                             problem.getProblemId(),
                             problem.getTitle(),
                             Math.toIntExact(problem.getLevel()),
-                            problem.getTag(),
+                            problem.getTagNames(),
                             score
                     );
                 })
