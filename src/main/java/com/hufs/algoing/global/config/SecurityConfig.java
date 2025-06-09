@@ -1,8 +1,11 @@
 package com.hufs.algoing.global.config;
 
-import com.hufs.algoing.global.jwt.JwtAuthenticationFilter;
+//import com.hufs.algoing.global.jwt.JwtAuthenticationFilter;
+
+import com.hufs.algoing.global.jwt.JwtFilter;
 import com.hufs.algoing.global.jwt.JwtUtil;
 import com.hufs.algoing.global.oauth.CustomOAuth2SuccessHandler;
+import com.hufs.algoing.global.oauth.PrincipalDetailsService;
 import com.hufs.algoing.global.oauth.PrincipalOauth2UserService;
 import com.hufs.algoing.user.entity.Role;
 import com.hufs.algoing.user.repository.UserRepository;
@@ -12,7 +15,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,8 +29,6 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.server.WebFilter;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -46,6 +46,8 @@ public class SecurityConfig {
     private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private PrincipalDetailsService principalDetailsService;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -77,7 +79,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new JwtFilter(jwtUtil, principalDetailsService),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .oauth2Login((oauth) -> oauth
                         .authorizationEndpoint(endpoint -> endpoint
                                 .authorizationRequestRepository(authorizationRequestRepository())

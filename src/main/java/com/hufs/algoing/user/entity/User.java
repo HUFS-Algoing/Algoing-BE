@@ -72,7 +72,7 @@ public class User {
 
     @Getter
     @Setter
-    private String refreshToken;
+    private String token;
 
     @Builder
     public User
