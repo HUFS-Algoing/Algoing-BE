@@ -56,13 +56,13 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String token = jwtUtil.createToken(principalDetails.getUser());
 
         response.addCookie(createCookie("Authorization", token));
-//        response.sendRedirect("https://al-going.com/main");
-
-        if (user.getBojId() == null) {
-            response.sendRedirect("https://al-going.com/profile");
-        } else {
-            response.sendRedirect("https://al-going.com/main");
-        }
+        response.sendRedirect("https://www.al-going.com/main");
+//
+//        if (user.getBojId() == null) {
+//            response.sendRedirect("https://al-going.com/profile");
+//        } else {
+//            response.sendRedirect("https://al-going.com/main");
+//        }
     }
 
 
