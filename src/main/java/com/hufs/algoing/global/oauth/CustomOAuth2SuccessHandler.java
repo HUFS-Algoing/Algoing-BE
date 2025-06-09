@@ -56,8 +56,15 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String token = jwtUtil.createToken(principalDetails.getUser());
 
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000");
+//        response.sendRedirect("https://al-going.com/main");
+
+        if (user.getBojId() == null) {
+            response.sendRedirect("https://al-going.com/profile");
+        } else {
+            response.sendRedirect("https://al-going.com/main");
+        }
     }
+
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
@@ -69,10 +76,5 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     }
 
     //        //TODO: 배포할 때 프론트 서버 주소로 바꿔야합니다
-//        if (user.getBojId() == null) {
-//            response.sendRedirect("https://al-going.com/profile");
-//        } else {
-//            response.sendRedirect("https://al-going.com/main");
-//        }
-//    }
+
 }
