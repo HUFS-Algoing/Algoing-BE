@@ -72,6 +72,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         cookie.setSecure(true); // Set to true if using HTTPS
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setDomain("al-going.com");
         return cookie;
     }
 
