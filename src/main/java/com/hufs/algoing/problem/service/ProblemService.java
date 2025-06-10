@@ -3,7 +3,6 @@ package com.hufs.algoing.problem.service;
 import com.hufs.algoing.problem.entity.Problem;
 import com.hufs.algoing.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

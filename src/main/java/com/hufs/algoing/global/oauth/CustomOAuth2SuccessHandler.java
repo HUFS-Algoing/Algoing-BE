@@ -41,7 +41,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         request.getSession(true).setAttribute("user", user);
         String token = jwtUtil.createToken(principalDetails.getUser());
 
-        response.addCookie(createCookie("Authorization", token));
+        response.addCookie(createCookie(token));
 
 
         if (user.getBojId() == null) {
@@ -52,8 +52,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     }
 
 
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
+    private Cookie createCookie(String value) {
+        Cookie cookie = new Cookie("Authorization", value);
         cookie.setMaxAge(60 * 60 * 60); // 60 hours
         cookie.setSecure(true); // Set to true if using HTTPS
         cookie.setPath("/");

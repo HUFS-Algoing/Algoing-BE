@@ -29,8 +29,7 @@ public class DailyRecommendAlgorithm {
                     return isMatchingUser&& isSolved;
                 }) // 해당 유저가 푼 문제만 필터링
                 .map(solvedProblem -> {
-                    Long problemId = solvedProblem.getProblemId().getProblemId();
-                    return problemId; // 푼 문제의 문제번호만 추출
+                    return solvedProblem.getProblemId().getProblemId(); // 푼 문제의 문제번호만 추출
                 })
                 .collect(Collectors.toList());  // 리스트로 변환
 

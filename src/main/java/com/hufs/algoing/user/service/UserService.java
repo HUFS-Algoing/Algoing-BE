@@ -56,7 +56,7 @@ public class UserService {
     private final BookMarkRepository bookMarkRepository;
     private final ProblemRepository problemRepository;
 
-    public void updateUserSolvedAcData(String bojId) throws Exception {
+    public void updateUserSolvedAcData(String bojId){
         // solved.ac API로부터 유저 정보 가져오기
         SolvedAcProfileDTO profile = solvedAcService.getSolvedAcProfile(bojId);
         // User 엔티티로 변환 후 저장
@@ -65,9 +65,7 @@ public class UserService {
         user.setBio(profile.getBio());
         user.setTier(profile.getTier());
 //        user.setSolvedCount(profile.getSolvedCount());
-
         userRepository.save(user);
-
     }
     public void insertBoj(BojInsertDTO bojInsertDTO, @AuthenticationPrincipal PrincipalDetails principal) throws Exception {
         // 현재 인증된 사용자의 이메일로 User 엔티티를 조회

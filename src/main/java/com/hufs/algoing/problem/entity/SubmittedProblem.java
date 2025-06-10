@@ -50,7 +50,7 @@ public class SubmittedProblem {
     @Builder
     public SubmittedProblem(
             User userId, Problem problemId,
-            String answer, LocalDateTime submittedAt, LocalDate submittedDate, String language,
+            String answer,String language,
             ProblemStatus status, String recommendationSessionId) {
         this.userId = userId;
         this.problemId = problemId;
