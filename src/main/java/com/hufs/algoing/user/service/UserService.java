@@ -2,6 +2,7 @@ package com.hufs.algoing.user.service;
 
 import com.hufs.algoing.global.code.ErrorStatus;
 import com.hufs.algoing.global.exception.custom.BojIdExistException;
+import com.hufs.algoing.global.exception.custom.BojIdNotExistException;
 import com.hufs.algoing.global.exception.custom.ProblemNotFoundException;
 import com.hufs.algoing.global.exception.custom.UserNotFoundException;
 import com.hufs.algoing.global.jwt.JwtUtil;
@@ -110,9 +111,9 @@ public class UserService {
             throw new BojIdExistException(ErrorStatus.BOJ_ID_EXISTS);
         }
 
-        // bojId 존재 여부 확인
+        // bojId 존재 여부 확인 (Solved.ac에 실제로 있는지)
         if (solvedAcService.getSolvedAcProfile(bojInsertDTO.getBojId()) == null) {
-            throw new BojIdExistException(ErrorStatus.BOJ_ID_NOT_EXISTS);
+            throw new BojIdNotExistException(ErrorStatus.BOJ_ID_NOT_EXISTS);
         }
 
         // bojId 및 bojPassword 저장
@@ -120,7 +121,6 @@ public class UserService {
         user.setBojPassword(encrypt(bojInsertDTO.getBojPassword()));
         userRepository.save(user);
 
-        // Solved.ac 정보 업데이트
         updateUserSolvedAcData(bojInsertDTO.getBojId());
     }
 
