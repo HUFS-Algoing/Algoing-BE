@@ -86,10 +86,8 @@ public class UserService {
         // bojId 및 bojPassword 저장
         user.setBojId(bojInsertDTO.getBojId());
         user.setBojPassword(encrypt(bojInsertDTO.getBojPassword()));
-        // User 엔티티를 저장
         userRepository.save(user);
 
-        // SolvedAcService를 사용하여 유저 정보를 업데이트
         updateUserSolvedAcData(bojInsertDTO.getBojId());
     }
 

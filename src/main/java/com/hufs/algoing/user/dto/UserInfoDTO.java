@@ -22,6 +22,7 @@ public class UserInfoDTO {
     private int userPoint;
     private LocalDateTime createdAt;
     private String token;
+    private String nickname;
 
 
     public UserInfoDTO(User user) {
@@ -36,5 +37,6 @@ public class UserInfoDTO {
         this.solvedCount = user.getSolvedCount();
         this.userPoint = user.getUserPoint();
         this.createdAt = user.getCreatedAt();
+        this.nickname = user.getNickname();
     }
 }
