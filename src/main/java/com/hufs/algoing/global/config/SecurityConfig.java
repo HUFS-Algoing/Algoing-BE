@@ -28,6 +28,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -78,6 +80,15 @@ public class SecurityConfig {
                         .successHandler(customOAuth2SuccessHandler)
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 .userService(principalOauth2UserService))
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("https://www.al-going.com/login"); // 401
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(FORBIDDEN.value()); // 403
+                            response.getWriter().write("권한이 없습니다.");
+                        })
                 );
 //                .logout(logout -> logout
 //                                .logoutUrl("/logout")
