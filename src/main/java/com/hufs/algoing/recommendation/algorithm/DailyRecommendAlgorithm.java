@@ -29,8 +29,7 @@ public class DailyRecommendAlgorithm {
                     return isMatchingUser&& isSolved;
                 }) // 해당 유저가 푼 문제만 필터링
                 .map(solvedProblem -> {
-                    Long problemId = solvedProblem.getProblemId().getProblemId();
-                    return problemId; // 푼 문제의 문제번호만 추출
+                    return solvedProblem.getProblemId().getProblemId(); // 푼 문제의 문제번호만 추출
                 })
                 .collect(Collectors.toList());  // 리스트로 변환
 
@@ -126,8 +125,7 @@ public class DailyRecommendAlgorithm {
             return 0.0; // 벡터 크기가 0이면 유사도 0
         }
 
-        double similarity = dotProduct / (Math.sqrt(userNorm) * Math.sqrt(problemNorm)); // 코사인 유사도 계산
-        return similarity;
+        return dotProduct / (Math.sqrt(userNorm) * Math.sqrt(problemNorm));
     }
 
     private static double calculateScore(User user, Problem problem, List<String> userProblemTags, double typeSimilarity) {
