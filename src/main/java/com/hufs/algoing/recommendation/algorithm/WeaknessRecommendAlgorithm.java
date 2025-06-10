@@ -181,7 +181,7 @@ public class WeaknessRecommendAlgorithm {
                 .collect(Collectors.toList());
 
         filteredRecommendProblems.forEach(problem -> {
-            problem.setFinalScore(new BigDecimal(problem.getFinalScore()).setScale(3, RoundingMode.HALF_UP).doubleValue());
+            problem.setFinalScore(BigDecimal.valueOf(problem.getFinalScore()).setScale(3, RoundingMode.HALF_UP).doubleValue());
         });
 
         int recommendCount = Math.min(3,filteredRecommendProblems.size());

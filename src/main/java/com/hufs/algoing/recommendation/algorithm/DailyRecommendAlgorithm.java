@@ -126,8 +126,7 @@ public class DailyRecommendAlgorithm {
             return 0.0; // 벡터 크기가 0이면 유사도 0
         }
 
-        double similarity = dotProduct / (Math.sqrt(userNorm) * Math.sqrt(problemNorm)); // 코사인 유사도 계산
-        return similarity;
+        return dotProduct / (Math.sqrt(userNorm) * Math.sqrt(problemNorm));
     }
 
     private static double calculateScore(User user, Problem problem, List<String> userProblemTags, double typeSimilarity) {
