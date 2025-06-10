@@ -80,7 +80,7 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                                 .logoutUrl("/api/logout")
-                                .logoutSuccessUrl("/")
+                                .logoutSuccessUrl("/login")
                                 .invalidateHttpSession(true)
                                 .deleteCookies("Authorization")
                 );
