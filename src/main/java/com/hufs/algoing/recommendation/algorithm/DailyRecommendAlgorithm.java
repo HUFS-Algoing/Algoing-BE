@@ -3,7 +3,6 @@ package com.hufs.algoing.recommendation.algorithm;
 import com.hufs.algoing.problem.entity.SubmittedProblem;
 import com.hufs.algoing.recommendation.dto.DailyRecommendDTO;
 import com.hufs.algoing.problem.entity.Problem;
-import com.hufs.algoing.recommendation.dto.WeaknessRecommendDTO;
 import com.hufs.algoing.user.entity.User;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class DailyRecommendAlgorithm {
 
     // 유저 정보(user테이블) + 유저가 푼 문제(user solved problem테이블) + 문제(problem테이블) 리스트 받아서 추천리스트 만듦.
     public static List<DailyRecommendDTO> recommend(User user, List<Problem> problems, List<SubmittedProblem> solvedProblems) {
-
 
         // 유저가 푼 문제 번호 -> USER_SOLVED_PROBLEM 테이블 Problem_num값 가져오기
         List<Long> solvedProblemIds = solvedProblems.stream()
@@ -47,7 +45,7 @@ public class DailyRecommendAlgorithm {
 
             List<Problem> randomProblem = problems.stream()
                     .filter(p -> Math.abs(p.getLevel() - userLevel) <= 2)
-                    .filter(p -> !solvedProblemIds.contains(p.getProblemId()))
+                    .filter(p -> !userSolvedproblem.contains(p.getProblemId()))
                     .limit(3)
                     .collect(Collectors.toList());
 
