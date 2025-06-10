@@ -51,7 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         //Authorization 헤더 검증
         if (authorization == null) {
-            SecurityContextHolder.clearContext();
+            //SecurityContextHolder.clearContext();
             System.out.println("token null");
             filterChain.doFilter(request, response);
 
