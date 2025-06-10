@@ -25,7 +25,7 @@ public class AuthController {
                     deleteCookie.setMaxAge(0);
                     deleteCookie.setPath("/");  // 원래 쿠키와 동일한 path
                     deleteCookie.setHttpOnly(true);
-                    // deleteCookie.setDomain(".al-going.com");
+                    deleteCookie.setDomain("al-going.com");
                     response.addCookie(deleteCookie);
                     break;
                 }
