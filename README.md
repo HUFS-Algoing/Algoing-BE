@@ -25,14 +25,14 @@ Algoing(알고잉)은 **사용자의 풀이 이력, 코드 품질, 선호 유형
 Algoing의 추천 시스템은 사용자 티어, 코드 리뷰 결과, 오답 이력 등 다양한 요소를 수치화하여 총 세 가지 전략적 방법론을 조합해 동작합니다.
 
 ### Daily Recommendation (일일 문제 추천)
-<img width="350" alt="Image" src="https://github.com/user-attachments/assets/8ec5b8b4-66fc-43e2-bcba-06e30869d0bb" /><br>
+<img width="452" alt="Image" src="https://github.com/user-attachments/assets/83bfff99-fded-41f7-9ce2-735befb63773" /><br>
 
 사용자의 티어와 One-hot Encoding으로 벡터화된 선호 문제 유형을 기반으로 <b><u>코사인 유사도(Cosine Similarity)</u></b>를 계산하여, 두 요소를 종합적으로 고려한 맞춤형 문제를 추천합니다.
 
 
 
 ### Weakness Recommendation (약점 보완 추천)
-<img width="452" alt="Image" src="https://github.com/user-attachments/assets/9dc1816e-e933-4517-8b35-8e6c203495ca" /><br>
+<img width="452" alt="Image" src="https://github.com/user-attachments/assets/e63c49a3-fa12-4e0f-a4df-4b8f46871e36" /><br>
 
 AI의 코드 리뷰 점수를 분석하여 파악한 **사용자의 약점**에 기반해 유클리드 거리(Euclidean Distance)로 사용자의 점수와 문제 점수의 유사도 계산합니다. 선호 유형 가중치를 반영하여 맞춤형 추천이 진행됩니다.
 
@@ -40,7 +40,7 @@ AI의 코드 리뷰 점수를 분석하여 파악한 **사용자의 약점**에 
 
 
 ### Incorrect Problem Recommendation (오답 유형 기반 추천)
-<img width="452" alt="Image" src="https://github.com/user-attachments/assets/10fdc584-29b8-498f-854e-a129edbe274d" /><br>
+<img width="452" alt="Image" src="https://github.com/user-attachments/assets/a777e376-ddc9-433e-9481-b93eaa60e872" />
 
 사용자의 누적 제출 데이터를 분석해, **정답률이 낮은 문제 유형**을 선별합니다. 이후 자카드 유사도(Jaccard Similarity)를 기반으로 해당 유형과 구조적으로 유사한 문제를 추출해 추천합니다.
 
@@ -85,7 +85,7 @@ graph LR
 ## 서비스 화면 예시
 
 ### 메인 화면
-![Image](https://github.com/user-attachments/assets/4bf0177e-08bf-4380-b270-2bbe83ce4c5e)
+![Image](https://github.com/user-attachments/assets/5572676f-5f23-4239-8480-c40b2f88be8b)
 ### 문제 추천 페이지
 ![Image](https://github.com/user-attachments/assets/0a32de0e-8319-4548-9201-83079e084d13)
 
